@@ -17,6 +17,10 @@ spring:
         options:
           model: ${OPENAI_MODEL:deepseek-v4.1-flash}
           temperature: 0.4
+          # This model is a reasoning model: tokens spent on thinking count against
+          # max-tokens. Too small a budget leaves an empty content payload and Jackson
+          # then fails with "No content to map due to end-of-input".
+          max-tokens: ${OPENAI_MAX_TOKENS:4096}
       # Enable retry so a transient upstream failure does not fail the whole planning request.
       retry:
         max-attempts: 2

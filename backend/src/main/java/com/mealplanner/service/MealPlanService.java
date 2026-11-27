@@ -41,17 +41,40 @@ public class MealPlanService {
 	}
 
 	public PlanResponse plan(PlanRequest request) {
-		// The tool callbacks are registered once on the ChatClient bean, so the model can call
+		try {
+			return callModel(request, false);
+		}
+		catch (EmptyModelResponseException ex) {
+			// Reasoning models sometimes spend the whole token budget on thinking and return
+			// an empty content payload, which Jackson reports as "No content to map".
+			// Retry once with an explicit JSON-only instruction before giving up.
+			log.warn("Model returned an empty/unparseable response, retrying once: {}", ex.getMessage());
+			return callModel(request, true);
+		}
+	}
+
+	private PlanResponse callModel(PlanRequest request, boolean jsonOnly) {
+		// Tool callbacks are registered once on the ChatClient bean, so the model can call
 		// them without repeating the wiring here.
 		ToolCallRecordingAdvisor.reset();
 
+		String user = userPrompt(request) + (jsonOnly ? "\n\n请严格只输出 JSON，不要任何解释文字。" : "");
 		CallResponseSpec spec = chatClient.prompt()
 				.system(systemPrompt(request))
-				.user(userPrompt(request))
+				.user(user)
 				.call();
 
-		// The structured entity and the recorded tool calls together make up the response.
-		MealPlan plan = spec.entity(MealPlan.class);
+		MealPlan plan;
+		try {
+			plan = spec.entity(MealPlan.class);
+		}
+		catch (Exception ex) {
+			throw new EmptyModelResponseException(ex.getMessage(), ex);
+		}
+		if (plan == null || plan.days() == null || plan.days().isEmpty()) {
+			throw new EmptyModelResponseException("模型返回的菜单为空");
+		}
+
 		List<PlanResponse.ToolInvocation> invocations = extractToolCalls();
 
 		List<ShoppingItem> shoppingList = shoppingListService.build(plan);
@@ -61,13 +84,25 @@ public class MealPlanService {
 				plan.days(),
 				plan.estimatedTotalCost(),
 				shoppingCost,
-				reconcile(plan.summary(), plan.estimatedShoppingCost(), shoppingCost),				plan.tips(),
+				reconcile(plan.summary(), plan.estimatedShoppingCost(), shoppingCost),
+				plan.tips(),
 				invocations.stream().map(PlanResponse.ToolInvocation::tool).distinct().toList());
 
 		log.info("Generated plan for {} days, budget {} CNY, shopping cost {} CNY, {} tool calls",
 				request.daysOrDefault(), request.budget(), shoppingCost, invocations.size());
 
 		return new PlanResponse(enriched, shoppingList, invocations, request);
+	}
+
+	/** Signals an empty/unparseable model reply that is worth one retry. */
+	private static class EmptyModelResponseException extends RuntimeException {
+		EmptyModelResponseException(String message) {
+			super(message);
+		}
+
+		EmptyModelResponseException(String message, Throwable cause) {
+			super(message, cause);
+		}
 	}
 
 	/**
