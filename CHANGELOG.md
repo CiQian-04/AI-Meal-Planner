@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.3.0](https://github.com/CiQian-04/AI-Meal-Planner/compare/v0.2.0...v0.3.0) (2026-11-27)
+
+
+### Features
+
+* 合并 53 道用户菜品 SOP，演示菜扩至 75 道，食材库 152 种 ([e19c25a](https://github.com/CiQian-04/AI-Meal-Planner/commit/e19c25abc86cbce537b9f057b607a632ba497b93))
+* 合并用户食材表格，价格库扩至 148 种并统一为 8 分类 ([96bf0b2](https://github.com/CiQian-04/AI-Meal-Planner/commit/96bf0b2b1ad6f9690d5766a7830a127373b7f31a))
+* 扩充食材库至 96 种、演示菜至 28 道，修复发版后脚本 jar 版本写死 ([ba9ebff](https://github.com/CiQian-04/AI-Meal-Planner/commit/ba9ebff81d3b3f2409f4e10cd339da6006995a97))
+* 菜品洗牌抽取避免重复，修复错误响应体前端读不到的问题 ([c6ce79d](https://github.com/CiQian-04/AI-Meal-Planner/commit/c6ce79d7f31bf93e6c971961d2a563c056bdf17c))
+* 默认切换 DeepSeek 国内直连，重写 Windows 双击启动脚本 ([833db51](https://github.com/CiQian-04/AI-Meal-Planner/commit/833db514e2a5bd736102b33f3b6647eea2bc849e))
+* 默认模型切换到国内中转站 api.li1023.com ([8e27974](https://github.com/CiQian-04/AI-Meal-Planner/commit/8e27974a28caa32d47858c65f8d23bceaf60babb))
+
+
+### Bug Fixes
+
+* **ci:** Maven 429 重试并共享 Docker 构建缓存 ([3b10b06](https://github.com/CiQian-04/AI-Meal-Planner/commit/3b10b06860feefce21a18c44f99cd01f153d5a2e))
+* **ci:** 固定 mock 洗牌种子保证预算断言稳定 ([4d7717d](https://github.com/CiQian-04/AI-Meal-Planner/commit/4d7717da963b67103aefbf13b93e22a7d8c0c1f4))
+* **release:** 修复 jar 打包 glob 展开错误，支持手动补发指定 tag ([f93f799](https://github.com/CiQian-04/AI-Meal-Planner/commit/f93f79981e463b849dca10d521a71e25ccefe9b5))
+* **test:** 未知食材测试用例改用确实不存在的名称 ([84f401e](https://github.com/CiQian-04/AI-Meal-Planner/commit/84f401e6f916d52a4da33c3ff9bb8bd64022f29c))
+* 推理模型空响应导致 Jackson 解析失败，加大 token 预算并加重试 ([4ac1ed5](https://github.com/CiQian-04/AI-Meal-Planner/commit/4ac1ed5ed9117cb32d4854260259eea3b008bc53))
+* 默认模型改为 deepseek-flash，文档补充模型名与余额说明 ([9b60b07](https://github.com/CiQian-04/AI-Meal-Planner/commit/9b60b076001814b5a6dc5bb826d48a382aa39d18))
+
+
+### Documentation
+
+* 添加 Windows 双击启动脚本 ([bc04e6e](https://github.com/CiQian-04/AI-Meal-Planner/commit/bc04e6eb84e994bc20afa6525aa18488e4738715))
+
 ## [0.2.0](https://github.com/CiQian-04/AI-Meal-Planner/compare/v0.1.0...v0.2.0) (2026-11-27)
 
 
