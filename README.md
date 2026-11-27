@@ -41,8 +41,8 @@ Java：  @Tool 方法执行，返回真实单价
 "toolCalls": [
   {
     "tool": "lookupIngredientPrices",
-    "arguments": "{\"names\": [\"番茄\", \"鸡蛋\", \"鸡胸肉\", \"西兰花\"]}",
-    "result": "[{\"found\":true,\"name\":\"鸡胸肉\",\"unit\":\"500g\",\"unitPrice\":9.9,...}]"
+    "arguments": "{\"names\": [\"番茄\", \"鸡蛋\", \"鸡胸肉\", \"西兰花\", \"土豆\", \"猪里脊\", \"香菇\", \"食用油\"]}",
+    "result": "[{\"found\":true,\"name\":\"番茄\",\"unit\":\"500g\",\"unitPrice\":4.5,\"category\":\"蔬菜\"}, ...]"
   }
 ]
 ```
@@ -79,6 +79,14 @@ MealPlan plan = spec.entity(MealPlan.class);
 
 Vue 3 + Vite，纯展示型 UI，不需要状态管理库。购物清单逐项勾选、实时统计已购/待购金额，
 一键导出 TXT。
+
+### 一处细节：金额以谁为准
+
+购物清单是按**整份菜单**跨菜品合并后才算的，模型看不到合并后的结果，它写进 `summary` 的
+成本自然会有偏差（逐项四舍五入 vs 先累加再四舍五入，实测差 1 分钱）。
+
+后端的做法是：`shoppingList` 里的每一项和 `estimatedShoppingCost` 都由后端计算，
+模型在文案里报的数字如果对不上，会被替换成实算值。用户读到的两处金额永远一致。
 
 ## 快速开始
 
@@ -193,6 +201,10 @@ Spring AI 会把工具定义发给模型，但执行函数调用循环的是 `To
 最终返回的响应只包含**最后一轮**，中间的 tool calls 已经丢了。
 解法是挂一个 order 排在 `ToolCallAdvisor` **之后**的 advisor 逐轮记录——
 而且别覆盖它的 `adviseCall()`，否则 `BaseAdvisor` 默认的 `after()` 就不会被调用。
+
+**3. 工具的执行结果不在请求它的那一轮响应里。**
+工具输出会作为一条 `role=tool` 消息追加进对话，跟**下一次**请求一起回来。
+所以记录结果要在 advisor 的 `before()` 里读 `ToolResponseMessage`，再回填到上一条调用记录上。
 
 ## License
 

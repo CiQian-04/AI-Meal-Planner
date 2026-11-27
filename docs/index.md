@@ -12,7 +12,7 @@
 
     模型在规划过程中自行决定查询哪些食材的价格。Spring AI 把 `@Tool` 注解的方法注册给模型，模型发起调用后由 Java 代码执行，结果再喂回对话。
 
-    [查看实现](quickstart.md#三模型自己调用价格函数)
+    [查看实现](architecture.md#function-calling)
 
 - **结构化输出**
 

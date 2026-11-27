@@ -93,6 +93,15 @@ try {
   await page.waitForTimeout(600)
   await capture(page, 'shopping')
 
+  // Expand the tool-call result, so the recording shows what the price function returned.
+  const toolResult = page.locator('.tool-result summary').first()
+  if (await toolResult.count()) {
+    await toolResult.scrollIntoViewIfNeeded()
+    await toolResult.click()
+    await page.waitForTimeout(500)
+    await capture(page, 'tool-result')
+  }
+
   // Tick a few shopping list items.
   const items = page.locator('.shop-item')
   const count = Math.min(4, await items.count())

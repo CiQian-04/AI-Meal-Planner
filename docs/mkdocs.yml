@@ -1,9 +1,23 @@
 site_name: AI 菜谱规划师
 site_description: 基于 Spring AI Function Calling 与结构化输出的家庭菜谱规划服务
+
+# 换成你自己的仓库地址：site_url 决定 GitHub Pages 的站点根路径，
+# repo_url 决定页面右上角「查看源码」和「编辑此页」的跳转目标。
 site_url: https://example.github.io/meal-planner/
 repo_url: https://github.com/example/meal-planner
 repo_name: meal-planner
 edit_uri: edit/main/docs/
+
+# The config file lives inside docs/, so paths are resolved relative to it.
+docs_dir: .
+site_dir: ../site
+
+# These live next to the markdown but are not pages — keep them out of the published site.
+# openapi.json is intentionally left in: it is the published machine-readable spec.
+exclude_docs: |
+  requirements.txt
+  export_openapi.py
+  mkdocs.yml
 
 theme:
   name: material
@@ -39,6 +53,7 @@ nav:
   - 快速开始: quickstart.md
   - 架构设计: architecture.md
   - API 参考: api.md
+  - OpenAPI 规范: openapi.md
   - 开发指南: development.md
   - 运维与发布: operations.md
 
@@ -59,6 +74,3 @@ markdown_extensions:
 
 plugins:
   - search
-  - redirects:
-      redirect_maps:
-        api-reference: api.md

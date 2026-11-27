@@ -529,6 +529,42 @@ button {
   font-weight: 600;
 }
 
+.tool-result {
+  margin-top: 6px;
+}
+
+.tool-result summary {
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 11px;
+  list-style: none;
+}
+
+.tool-result summary::-webkit-details-marker {
+  display: none;
+}
+
+.tool-result summary::before {
+  content: '▸ ';
+}
+
+.tool-result[open] summary::before {
+  content: '▾ ';
+}
+
+.tool-result pre {
+  margin: 5px 0 0;
+  padding: 6px 7px;
+  background: var(--bg);
+  border-radius: 5px;
+  font-size: 10.5px;
+  line-height: 1.5;
+  max-height: 180px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 .progress-track {
   height: 7px;
   background: #e4e7ec;

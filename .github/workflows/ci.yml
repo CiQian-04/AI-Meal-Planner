@@ -105,7 +105,7 @@ jobs:
         run: mvn -B -ntp package -DskipTests
 
       - name: Run backend + mock model and verify the API
-        run: bash scripts/verify.sh
+        run: OUT=/tmp/meal-planner-verify bash scripts/verify.sh
 
       - name: Upload verification artefacts
         if: always()
@@ -113,9 +113,10 @@ jobs:
         with:
           name: api-verification
           path: |
-            /tmp/plan.json
-            /tmp/catalog.json
-            /tmp/openapi.json
+            /tmp/meal-planner-verify/plan.json
+            /tmp/meal-planner-verify/catalog.json
+            /tmp/meal-planner-verify/openapi.json
+            /tmp/meal-planner-verify/backend.log
           retention-days: 7
 
   docker:

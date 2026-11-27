@@ -32,7 +32,7 @@ flowchart TB
     L --> K
 ```
 
-## 三、模型自己调用价格函数
+## 三、模型自己调用价格函数 {#function-calling}
 
 这是后端最核心的部分。
 
@@ -136,7 +136,34 @@ public class ToolCallRecordingAdvisor implements CallAdvisor, BaseAdvisor {
 2. **不要覆盖 `adviseCall()`**。`BaseAdvisor` 的默认实现会在链的两端调用 `before()`/`after()`；
    一旦自己覆盖 `adviseCall()` 直接 `chain.nextCall()`，`after()` 就再也不会被调用。
 
-## 五、购物清单合并
+### 工具的返回值不在请求它的那一轮里
+
+上面记下来的只有**模型请求了什么**，没有**工具返回了什么**——因为工具输出不会回到
+发请求的那一轮响应上。
+
+工具执行完后，输出会作为一条 `role=tool` 消息追加进对话，跟**下一次**请求一起发给模型。
+所以要拿到结果，得在 advisor 的 `before()` 里把上一轮的工具输出取出来，回填到对应的调用记录上：
+
+```java
+@Override
+public ChatClientRequest before(ChatClientRequest request, AdvisorChain chain) {
+    for (var message : request.prompt().getInstructions()) {
+        if (message instanceof ToolResponseMessage toolMessage) {
+            for (var response : toolMessage.getResponses()) {
+                attach(response.responseData());   // 回填到最早一条还没结果的记录
+            }
+        }
+    }
+    return request;
+}
+```
+
+`ToolResponseMessage.getResponses()` 返回的 `ToolResponse` 有三个字段：
+`id`（工具调用 id）、`name`（函数名）、`responseData`（返回值 JSON）。
+
+前端界面上「查看返回结果」折叠面板展示的就是这个 `responseData`。
+
+## 五、购物清单合并 {#shopping-list}
 
 模型给出的菜谱里，同一种食材会出现在多道菜中。`ShoppingListService` 负责合并：
 
@@ -157,7 +184,30 @@ for (var day : plan.days()) {
 
 合并后重新按价格库计价，保证 **UI 显示的金额 = 模型规划时看到的单价**。
 
-## 数据模型
+### 金额以谁为准
+
+合并后的总额和模型自己写的总额会有**分位差异**：模型是逐条食材四舍五入再相加，
+后端是先累加未舍入的值再四舍五入。3 天 9 道菜的量级下，差 1 分钱是常态。
+
+如果把两个数字都发给用户，界面上会出现「概览写 ¥59.15、清单合计 ¥59.14」这种矛盾。
+所以后端的做法是：
+
+- `shoppingList[].estimatedCost` 和 `plan.estimatedShoppingCost` —— **后端算的**，权威值；
+- `plan.summary` 里模型写的金额 —— 若与权威值不符，**替换成权威值**再返回。
+
+```java
+static String reconcile(String summary, double modelCost, double actualCost) {
+    if (Math.abs(modelCost - actualCost) < 0.005) {
+        return summary;   // 容差内，保持原文
+    }
+    return summary.replace(String.format("%.2f", modelCost),
+                           String.format("%.2f", actualCost));
+}
+```
+
+用户读到的两处金额永远一致，代价是模型的文案偶尔会被动一下——这比数字打架好。
+
+## 数据模型 {#data-model}
 
 ```
 MealPlan

@@ -210,6 +210,10 @@ async function copyToClipboard() {
               <div v-for="(call, index) in response?.toolCalls ?? []" :key="index" class="tool-call">
                 <span class="name">{{ call.tool }}</span>
                 <div style="color: var(--text-muted); margin-top: 3px">{{ call.arguments }}</div>
+                <details v-if="call.result" class="tool-result">
+                  <summary>查看返回结果</summary>
+                  <pre>{{ call.result }}</pre>
+                </details>
               </div>
               <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px">
                 共 {{ response?.toolCalls?.length ?? 0 }} 次调用

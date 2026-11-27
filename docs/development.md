@@ -38,7 +38,7 @@ mvn -B -ntp verify        # 编译 + 测试
 mvn spring-boot:run       # 本地启动
 ```
 
-### 添加新的食材价格
+### 添加新的食材价格 {#ingredient-prices}
 
 价格库在 `IngredientPriceTools` 的静态初始化块里：
 
@@ -53,7 +53,7 @@ static {
 
 改完记得同步更新 mock 服务的价目表 `tools/mock_openai_server.py`，否则离线模式下价格会不一致。
 
-### 添加新的工具函数
+### 添加新的工具函数 {#add-a-tool}
 
 在 `IngredientPriceTools` 里加一个 `@Tool` 方法即可：
 
@@ -70,7 +70,7 @@ Spring AI 会自动把它注册进工具列表，**不需要改配置**。
 
 方法上的 `@Tool` / `@ToolParam` 来自 `org.springframework.ai.tool.annotation`。
 
-### 调整提示词
+### 调整提示词 {#tune-the-prompt}
 
 系统提示词在 `MealPlanService.systemPrompt()`，用户提示词在 `userPrompt()`。
 
@@ -88,7 +88,7 @@ Spring AI 会自动把它注册进工具列表，**不需要改配置**。
 3. 在 `controller` 包写 REST 接口，用 `@Tag` / `@Operation` 补充 OpenAPI 文档
 4. 在 `GlobalExceptionHandler` 里补充异常处理（如有需要）
 
-## 前端
+## 前端 {#frontend}
 
 ```bash
 cd frontend
@@ -98,7 +98,7 @@ npm run build       # 生产构建
 npm run type-check  # TypeScript 类型检查
 ```
 
-### 修改样式
+### 修改样式 {#styles}
 
 所有样式集中在 `src/assets/main.css`，用 CSS 变量定义主题色：
 

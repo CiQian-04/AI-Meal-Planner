@@ -8,10 +8,20 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MOCK_PORT="${MOCK_PORT:-8095}"
 BACKEND_PORT="${BACKEND_PORT:-8080}"
+SCRATCH="${SCRATCH:-$(mktemp -d 2>/dev/null || echo "/tmp/meal-planner-$$")}"
+mkdir -p "$SCRATCH"
 
-# Git Bash needs POSIX-style paths; the Windows form is not understood by `java` here.
-export JAVA_HOME="${JAVA_HOME:-/c/Program Files/Java/jdk-21}"
-export PATH="$JAVA_HOME/bin:/c/Users/辞浅_/.workbuddy-ai/binaries/apache-maven-3.9.9/bin:$PATH"
+# On this Windows host the JDK and Maven live outside PATH. On CI both are already set up,
+# so only prepend them when they actually exist.
+LOCAL_JDK="/c/Program Files/Java/jdk-21"
+LOCAL_MAVEN="/c/Users/${USER:-$(id -un)}/.workbuddy-ai/binaries/apache-maven-3.9.9/bin"
+if [[ -z "${JAVA_HOME:-}" && -d "$LOCAL_JDK" ]]; then
+  export JAVA_HOME="$LOCAL_JDK"
+fi
+if [[ -n "${JAVA_HOME:-}" ]]; then
+  export PATH="$JAVA_HOME/bin:$PATH"
+fi
+[[ -d "$LOCAL_MAVEN" ]] && export PATH="$LOCAL_MAVEN:$PATH"
 
 cleanup() {
   [[ -n "${MOCK_PID:-}" ]] && kill "$MOCK_PID" 2>/dev/null
@@ -20,7 +30,7 @@ cleanup() {
 trap cleanup EXIT
 
 echo "==> starting mock OpenAI server on :$MOCK_PORT"
-python -u "$ROOT/tools/mock_openai_server.py" --port "$MOCK_PORT" > /c/tmp/mock.log 2>&1 &
+python -u "$ROOT/tools/mock_openai_server.py" --port "$MOCK_PORT" > "$SCRATCH/mock.log" 2>&1 &
 MOCK_PID=$!
 
 # Wait until the mock answers.
@@ -38,7 +48,7 @@ java -Dfile.encoding=UTF-8 -jar "$ROOT/backend/target/meal-planner-backend-0.1.0
   --spring.ai.openai.base-url="http://127.0.0.1:$MOCK_PORT" \
   --spring.ai.openai.api-key=mock \
   --spring.ai.openai.chat.options.model=mock-model \
-  > /c/tmp/backend.log 2>&1 &
+  > "$SCRATCH/backend.log" 2>&1 &
 BACKEND_PID=$!
 
 echo "==> waiting for backend health"

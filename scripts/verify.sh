@@ -9,13 +9,27 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MOCK_PORT="${MOCK_PORT:-8095}"
 BACKEND_PORT="${BACKEND_PORT:-8080}"
-OUT="${OUT:-/c/tmp}"
-# Python runs on Windows and needs the native path, not the Git Bash one.
-WIN_OUT="C:////tmp"
+OUT="${OUT:-$(mktemp -d 2>/dev/null || echo /tmp/meal-planner-$$)}"
+mkdir -p "$OUT"
 
-# Git Bash needs POSIX-style paths; the Windows form is not understood by `java` here.
-export JAVA_HOME="${JAVA_HOME:-/c/Program Files/Java/jdk-21}"
-export PATH="$JAVA_HOME/bin:/c/Users/辞浅_/.workbuddy-ai/binaries/apache-maven-3.9.9/bin:$PATH"
+# Python runs on Windows and needs the native path, not the Git Bash one.
+if command -v cygpath > /dev/null 2>&1; then
+  WIN_OUT="$(cygpath -w "$OUT")"
+else
+  WIN_OUT="$OUT"
+fi
+
+# On this Windows host the JDK and Maven live outside PATH. On CI both are already set up,
+# so only prepend them when they actually exist.
+LOCAL_JDK="/c/Program Files/Java/jdk-21"
+LOCAL_MAVEN="/c/Users/${USER:-$(id -un)}/.workbuddy-ai/binaries/apache-maven-3.9.9/bin"
+if [[ -z "${JAVA_HOME:-}" && -d "$LOCAL_JDK" ]]; then
+  export JAVA_HOME="$LOCAL_JDK"
+fi
+if [[ -n "${JAVA_HOME:-}" ]]; then
+  export PATH="$JAVA_HOME/bin:$PATH"
+fi
+[[ -d "$LOCAL_MAVEN" ]] && export PATH="$LOCAL_MAVEN:$PATH"
 java -version 2>&1 | head -1
 
 cleanup() {
@@ -64,7 +78,7 @@ echo "  HTTP $code"
 check "$([ "$code" = "200" ] && echo 0 || echo 1)" "规划接口返回 200"
 
 if [[ "$code" == "200" ]]; then
-  python - 'C:/tmp/plan.json' <<'PY'
+  python - "$WIN_OUT/plan.json" <<'PY'
 import json, sys
 d = json.load(open(sys.argv[1], encoding="utf-8"))
 plan = d["plan"]
@@ -84,7 +98,7 @@ spicy = {m["spicyLevel"] for day in plan["days"] for m in day["meals"]}
 print(f"  spicyLevel set  : {spicy}")
 PY
   echo
-  python - 'C:/tmp/plan.json' <<'PY'
+  python - "$WIN_OUT/plan.json" <<'PY'
 import json, sys
 d = json.load(open(sys.argv[1], encoding="utf-8"))
 plan = d["plan"]
@@ -94,10 +108,13 @@ def check(cond, msg):
     print(f"  [{'PASS' if cond else 'FAIL'}] {msg}")
     ok = ok and cond
 check(len(d.get("toolCalls", [])) > 0, "模型发起了 Function Calling（toolCalls 非空）")
+check(all(c.get("result") for c in d.get("toolCalls", [])), "每次工具调用的返回值都被记录")
 check(len(plan["days"]) == 3, "返回 3 天菜单")
 check(len(d["shoppingList"]) > 0, "购物清单非空")
 check(plan["estimatedShoppingCost"] > 0, "采购成本已计算")
 check(plan["estimatedShoppingCost"] <= 100, f"采购成本未超预算（¥{plan['estimatedShoppingCost']} <= 100）")
+check(f"{plan['estimatedShoppingCost']:.2f}" in plan["summary"],
+      f"summary 中的金额与实算一致（¥{plan['estimatedShoppingCost']}）")
 check({m["spicyLevel"] for day in plan["days"] for m in day["meals"]} == {"none"}, "所有菜品均不辣")
 check(all(day["meals"] for day in plan["days"]), "每天都有菜品")
 sys.exit(0 if ok else 1)
@@ -111,13 +128,13 @@ fi
 
 step "GET /api/v1/prices/catalog"
 code=$(curl -s --max-time 20 -o "$OUT/catalog.json" -w '%{http_code}' "http://127.0.0.1:$BACKEND_PORT/api/v1/prices/catalog")
-count=$(python -c "import json;print(json.load(open('C:/tmp/catalog.json',encoding='utf-8'))['count'])" 2>/dev/null || echo 0)
+count=$(python -c "import json,sys;print(json.load(open(sys.argv[1],encoding='utf-8'))['count'])" "$WIN_OUT/catalog.json" 2>/dev/null || echo 0)
 echo "  HTTP $code, $count 种食材"
 check "$([ "$code" = "200" ] && [ "$count" -gt 0 ] && echo 0 || echo 1)" "食材价格目录可访问"
 
 step "GET /v3/api-docs"
 code=$(curl -s --max-time 20 -o "$OUT/openapi.json" -w '%{http_code}' "http://127.0.0.1:$BACKEND_PORT/v3/api-docs")
-paths=$(python -c "import json;print(len(json.load(open('C:/tmp/openapi.json',encoding='utf-8'))['paths']))" 2>/dev/null || echo 0)
+paths=$(python -c "import json,sys;print(len(json.load(open(sys.argv[1],encoding='utf-8'))['paths']))" "$WIN_OUT/openapi.json" 2>/dev/null || echo 0)
 echo "  HTTP $code, $paths 个 path"
 check "$([ "$code" = "200" ] && [ "$paths" -gt 0 ] && echo 0 || echo 1)" "OpenAPI 文档已生成"
 

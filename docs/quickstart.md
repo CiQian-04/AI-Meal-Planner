@@ -91,7 +91,7 @@ npm run dev
     export OPENAI_API_KEY=dummy
     ```
 
-## 四、没有 API Key 也能跑
+## 四、没有 API Key 也能跑 {#no-api-key}
 
 仓库自带一个 OpenAI 兼容的 mock 服务，用于离线开发和 CI：
 
@@ -147,4 +147,4 @@ curl -s -X POST http://localhost:8080/api/v1/plans \
 
 - 了解实现细节 → [架构设计](architecture.md)
 - 查看完整接口定义 → [API 参考](api.md)
-- 修改价格数据 → [开发指南](development.md#修改食材价格库)
+- 修改价格数据 → [开发指南](development.md#ingredient-prices)

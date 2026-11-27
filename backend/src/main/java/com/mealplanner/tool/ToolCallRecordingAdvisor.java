@@ -9,6 +9,7 @@ import org.springframework.ai.chat.client.ChatClientResponse;
 import org.springframework.ai.chat.client.advisor.api.AdvisorChain;
 import org.springframework.ai.chat.client.advisor.api.BaseAdvisor;
 import org.springframework.ai.chat.client.advisor.api.CallAdvisor;
+import org.springframework.ai.chat.messages.ToolResponseMessage;
 
 /**
  * Records the tool calls the model requests during a planning round.
@@ -50,6 +51,7 @@ public class ToolCallRecordingAdvisor implements CallAdvisor, BaseAdvisor {
 
 	@Override
 	public ChatClientRequest before(ChatClientRequest chatClientRequest, AdvisorChain chain) {
+		captureResults(chatClientRequest);
 		return chatClientRequest;
 	}
 
@@ -61,6 +63,51 @@ public class ToolCallRecordingAdvisor implements CallAdvisor, BaseAdvisor {
 
 	// adviseCall() is intentionally not overridden: the default implementation in BaseAdvisor
 	// calls before() and after() around the rest of the chain, which is what we need.
+
+	/**
+	 * Fills in the results of tool calls executed on the previous round.
+	 *
+	 * <p>The tool output never comes back on the response that asked for it — it is appended to
+	 * the conversation as a {@link ToolResponseMessage} and arrives with the <em>next</em> request.
+	 * Every round therefore starts by draining whatever the tool layer produced last time.
+	 */
+	private static void captureResults(ChatClientRequest request) {
+		if (request == null || request.prompt() == null) {
+			return;
+		}
+		for (var message : request.prompt().getInstructions()) {
+			if (!(message instanceof ToolResponseMessage toolMessage)) {
+				continue;
+			}
+			for (var response : toolMessage.getResponses()) {
+				attach(response.responseData());
+			}
+		}
+	}
+
+	/**
+	 * Attaches a tool output to the oldest still-unresolved invocation of that tool.
+	 */
+	private static void attach(String rawResult) {
+		if (rawResult == null || rawResult.isBlank()) {
+			return;
+		}
+		List<Invocation> invocations = CURRENT.get();
+		for (int i = 0; i < invocations.size(); i++) {
+			if (invocations.get(i).result() == null) {
+				invocations.set(i, invocations.get(i).withResult(preview(rawResult)));
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Trims a tool output to a length that is useful in the UI without shipping the whole payload.
+	 */
+	private static String preview(String raw) {
+		String flattened = raw.strip();
+		return flattened.length() <= 200 ? flattened : flattened.substring(0, 200) + "…";
+	}
 
 	/**
 	 * Stores the tool calls contained in the given response, if any.
@@ -88,6 +135,15 @@ public class ToolCallRecordingAdvisor implements CallAdvisor, BaseAdvisor {
 	 */
 	public static void reset() {
 		CURRENT.remove();
+	}
+
+	/**
+	 * Adds an invocation to the current thread's recording.
+	 *
+	 * <p>Visible for testing so the recording can be exercised without a running model.
+	 */
+	static void seed(String tool, String arguments) {
+		CURRENT.get().add(new Invocation(tool, arguments, null));
 	}
 
 	/**

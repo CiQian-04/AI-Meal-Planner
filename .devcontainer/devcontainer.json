@@ -2,11 +2,6 @@
   "name": "AI Meal Planner",
   "image": "mcr.microsoft.com/devcontainers/java:21-bookworm",
   "features": {
-    "ghcr.io/devcontainers/features/java:1": {
-      "version": "none",
-      "installMaven": "false",
-      "jdkVersion": "none"
-    },
     "ghcr.io/devcontainers/features/node:1": {
       "version": "lts"
     }
@@ -25,7 +20,8 @@
         "Vue.volar",
         "dbaeumer.vscode-eslint",
         "eamodio.gitlens",
-        "github.vscode-github-actions"
+        "github.vscode-github-actions",
+        "ms-python.python"
       ],
       "settings": {
         "java.configuration.updateBuildConfiguration": "automatic",

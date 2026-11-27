@@ -61,14 +61,31 @@ public class MealPlanService {
 				plan.days(),
 				plan.estimatedTotalCost(),
 				shoppingCost,
-				plan.summary(),
-				plan.tips(),
+				reconcile(plan.summary(), plan.estimatedShoppingCost(), shoppingCost),				plan.tips(),
 				invocations.stream().map(PlanResponse.ToolInvocation::tool).distinct().toList());
 
 		log.info("Generated plan for {} days, budget {} CNY, shopping cost {} CNY, {} tool calls",
 				request.daysOrDefault(), request.budget(), shoppingCost, invocations.size());
 
 		return new PlanResponse(enriched, shoppingList, invocations, request);
+	}
+
+	/**
+	 * Rewrites any cost figure the model stated in its summary so it matches the authoritative
+	 * total computed here.
+	 *
+	 * <p>The model only sees the per-call tool results; the shopping list is merged and priced
+	 * afterwards, and rounding per line versus rounding the sum can differ by a few cents. A
+	 * summary that contradicts the shopping list is worse than no summary, so the model's number
+	 * is replaced rather than shown alongside ours.
+	 */
+	static String reconcile(String summary, double modelCost, double actualCost) {
+		if (summary == null || summary.isBlank() || Math.abs(modelCost - actualCost) < 0.005) {
+			return summary;
+		}
+		String formal = String.format(java.util.Locale.ROOT, "%.2f", modelCost);
+		String actual = String.format(java.util.Locale.ROOT, "%.2f", actualCost);
+		return summary.replace(formal, actual);
 	}
 
 	/**
