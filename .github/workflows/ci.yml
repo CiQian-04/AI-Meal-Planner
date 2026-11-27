@@ -41,7 +41,7 @@ jobs:
 
       - name: Upload test reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: backend-test-reports
           path: backend/target/surefire-reports/
@@ -73,7 +73,7 @@ jobs:
         run: npm run build
 
       - name: Upload dist
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: frontend-dist
           path: frontend/dist/
@@ -109,7 +109,7 @@ jobs:
 
       - name: Upload verification artefacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: api-verification
           path: |
