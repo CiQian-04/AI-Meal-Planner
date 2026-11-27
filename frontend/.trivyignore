@@ -1,0 +1,2 @@
+# 前端镜像当前无需豁免任何 CVE。
+# apk upgrade 已在 Dockerfile 构建期修补基础包；npm 依赖经 Trivy 扫描无 critical。
