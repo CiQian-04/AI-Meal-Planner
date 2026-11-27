@@ -8,11 +8,23 @@ FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /build
 
 # Resolve dependencies first so that source-only changes reuse the cached layer.
+# Shared GitHub Actions runners occasionally get HTTP 429 from Maven Central,
+# so retry a few times instead of failing the whole image build.
 COPY pom.xml .
-RUN mvn -B -q dependency:go-offline
+RUN for i in 1 2 3 4 5; do \
+      mvn -B -ntp -q dependency:go-offline && break; \
+      if [ "$i" -eq 5 ]; then exit 1; fi; \
+      echo "Maven dependency resolution failed (attempt $i/5); retrying in 15s..."; \
+      sleep 15; \
+    done
 
 COPY src ./src
-RUN mvn -B -q clean package -DskipTests
+RUN for i in 1 2 3 4 5; do \
+      mvn -B -ntp -q clean package -DskipTests && break; \
+      if [ "$i" -eq 5 ]; then exit 1; fi; \
+      echo "Maven package failed (attempt $i/5); retrying in 15s..."; \
+      sleep 15; \
+    done
 
 # ---------- Stage 2: runtime ----------
 FROM eclipse-temurin:21-jre-jammy AS runtime

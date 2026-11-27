@@ -110,6 +110,8 @@ jobs:
           tags: |
             ${{ env.IMAGE_BASE }}/backend:${{ env.RELEASE_TAG }}
             ${{ env.IMAGE_BASE }}/backend:latest
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
 
       - name: Push frontend image
         uses: docker/build-push-action@v6
@@ -119,3 +121,5 @@ jobs:
           tags: |
             ${{ env.IMAGE_BASE }}/frontend:${{ env.RELEASE_TAG }}
             ${{ env.IMAGE_BASE }}/frontend:latest
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
