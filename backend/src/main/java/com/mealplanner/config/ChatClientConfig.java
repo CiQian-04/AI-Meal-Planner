@@ -7,6 +7,8 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.ToolCallAdvisor;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.model.tool.ToolCallingManager;
+import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.ai.openai.api.ResponseFormat;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.tool.method.MethodToolCallbackProvider;
@@ -63,11 +65,18 @@ public class ChatClientConfig {
 	/**
 	 * A tool-free client used as a fallback. Some reasoning models keep re-requesting tools and
 	 * never emit the final JSON, so after collecting real prices we ask them again with the
-	 * prices already in the prompt and no tools available.
+	 * prices already in the prompt and no tools available. The fallback forces JSON-object mode
+	 * so the model cannot wrap the plan in prose.
 	 */
 	@Bean
 	public ChatClient plainChatClient(ChatModel chatModel) {
-		return ChatClient.builder(chatModel).build();
+		return ChatClient.builder(chatModel)
+				.defaultOptions(OpenAiChatOptions.builder()
+						.responseFormat(ResponseFormat.builder()
+								.type(ResponseFormat.Type.JSON_OBJECT)
+								.build())
+						.build())
+				.build();
 	}
 
 	/**
