@@ -17,8 +17,8 @@ cd meal-planner
 
 # 配置模型端点（见下文「配置模型」）
 export OPENAI_API_KEY=sk-xxxx
-export OPENAI_BASE_URL=https://api.openai.com
-export OPENAI_MODEL=gpt-4o-mini
+export OPENAI_BASE_URL=https://api.deepseek.com
+export OPENAI_MODEL=deepseek-chat
 
 docker compose up --build
 ```
@@ -52,8 +52,10 @@ npm run dev
 | 变量 | 说明 | 默认值 |
 | --- | --- | --- |
 | `OPENAI_API_KEY` | API 密钥 | `sk-not-configured` |
-| `OPENAI_BASE_URL` | 接口根地址 | `https://api.openai.com` |
-| `OPENAI_MODEL` | 模型名 | `gpt-4o-mini` |
+| `OPENAI_BASE_URL` | 接口根地址 | `https://api.deepseek.com` |
+| `OPENAI_MODEL` | 模型名 | `deepseek-chat` |
+
+默认使用 DeepSeek，国内可直连。DeepSeek 密钥在 https://platform.deepseek.com 申请。
 
 ### 常见第三方端点
 
