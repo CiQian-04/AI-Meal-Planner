@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import random
 import re
 import uuid
@@ -885,11 +886,13 @@ def build_plan(days: int, meals_per_day: int, budget: float, tool_results: list)
     # Shuffle the whole recipe pool so every dish gets an equal chance of appearing.
     # Refill with a fresh shuffle only after the pool is exhausted, guaranteeing no
     # repeats within a cycle (75 dishes >> the typical 30 meals in a 10-day plan).
+    # MOCK_SEED makes CI runs deterministic without affecting normal usage.
+    rng = random.Random(os.environ.get("MOCK_SEED") or None)
     needed = days * meals_per_day
     pool = []
     while len(pool) < needed:
         batch = list(RECIPE_TEMPLATES)
-        random.shuffle(batch)
+        rng.shuffle(batch)
         pool.extend(batch)
 
     for day in range(1, days + 1):

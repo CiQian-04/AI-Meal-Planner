@@ -105,7 +105,9 @@ jobs:
         run: mvn -B -ntp package -DskipTests
 
       - name: Run backend + mock model and verify the API
-        run: OUT=/tmp/meal-planner-verify bash scripts/verify.sh
+        # Fix the shuffle seed so the budget assertion is reproducible; normal
+        # runs stay random so every dish eventually gets screen time.
+        run: MOCK_SEED=4 OUT=/tmp/meal-planner-verify bash scripts/verify.sh
 
       - name: Upload verification artefacts
         if: always()
