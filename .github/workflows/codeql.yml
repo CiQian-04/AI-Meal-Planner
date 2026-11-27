@@ -20,13 +20,13 @@ jobs:
     strategy:
       fail-open: false
       matrix:
-        language: [java-typescript, javascript-typescript]
+        language: [java-kotlin, javascript-typescript]
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up JDK 21
-        if: matrix.language == 'java-typescript'
+        if: matrix.language == 'java-kotlin'
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -41,7 +41,7 @@ jobs:
 
       # Java needs its dependencies present for the autobuilder to work.
       - name: Autobuild
-        if: matrix.language == 'java-typescript'
+        if: matrix.language == 'java-kotlin'
         uses: github/codeql-action/autobuild@v3
 
       - name: Autobuild (JS)

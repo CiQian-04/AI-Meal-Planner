@@ -13,9 +13,8 @@
           "jsonpath": "$.version"
         },
         {
-          "type": "pom.xml",
-          "path": "backend/pom.xml",
-          "xpath": "//project/version"
+          "type": "pom",
+          "path": "backend/pom.xml"
         }
       ],
       "include-component-in-tag": false

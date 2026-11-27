@@ -40,8 +40,9 @@ jobs:
         # inside docs/ and make the strict build abort.
         run: mkdocs build --strict --config-file docs/mkdocs.yml
 
-      - name: Export the OpenAPI specification
-        run: python docs/export_openapi.py
+      # docs/openapi.json is committed and ships with the site. Regenerating it here would
+      # require a running backend (Java + Maven + mock model), which this workflow does not
+      # have. When the API changes, re-run docs/export_openapi.py locally and commit the result.
 
       - uses: actions/upload-pages-artifact@v3
         with:

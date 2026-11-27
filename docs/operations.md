@@ -173,11 +173,15 @@ mkdocs build --config-file docs/mkdocs.yml   # 构建到 site/
 ### 导出 OpenAPI 规范
 
 ```bash
-# 先启动后端
+# 先启动后端（本地 mvn spring-boot:run 即可）
 python docs/export_openapi.py
 ```
 
 脚本会把 `/v3/api-docs` 的内容保存到 `docs/openapi.json`，随文档一起发布。
+
+接口有变更时，本地重新导出并提交 `docs/openapi.json`。
+文档工作流**不在 CI 里**重新导出——那需要一套 JDK + Maven + mock 模型环境，
+对纯文档构建来说太重，所以 CI 直接使用仓库里提交的这份规范文件。
 
 ## 监控
 
