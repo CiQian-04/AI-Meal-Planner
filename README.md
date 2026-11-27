@@ -95,7 +95,7 @@ Vue 3 + Vite，纯展示型 UI，不需要状态管理库。购物清单逐项�
 ```bash
 export OPENAI_API_KEY=sk-xxxx
 export OPENAI_BASE_URL=https://api.deepseek.com
-export OPENAI_MODEL=deepseek-chat
+export OPENAI_MODEL=deepseek-flash
 
 docker compose up --build
 ```
@@ -136,13 +136,13 @@ bash scripts/ui-verify.sh   # 真实浏览器验证 + 截图
 
 | 服务 | `OPENAI_BASE_URL` | `OPENAI_MODEL` |
 | --- | --- | --- |
-| DeepSeek（默认） | `https://api.deepseek.com` | `deepseek-chat` |
+| DeepSeek（默认） | `https://api.deepseek.com` | `deepseek-flash` |
 | 阿里云百炼 | `https://dashscope.aliyuncs.com/compatible-mode` | `qwen-plus` |
 | OpenAI（国内需代理） | `https://api.openai.com` | `gpt-4o-mini` |
 | Ollama | `http://localhost:11434` | `qwen2.5:7b` |
 | vLLM | `http://your-host:8000` | 你的模型名 |
 
-> 默认配置是 DeepSeek，国内可直连。模型需要支持 function calling，`deepseek-chat`、`qwen-plus`、`gpt-4o` 等都可以。
+> 默认配置是 DeepSeek，国内可直连。模型需要支持 function calling，`deepseek-flash`、`qwen-plus`、`gpt-4o` 等都可以。
 
 ## 项目结构
 

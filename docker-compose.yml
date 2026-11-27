@@ -20,7 +20,7 @@ services:
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY:-sk-not-configured}
       OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.deepseek.com}
-      OPENAI_MODEL: ${OPENAI_MODEL:-deepseek-chat}
+      OPENAI_MODEL: ${OPENAI_MODEL:-deepseek-flash}
       SPRING_PROFILES_ACTIVE: prod
     extra_hosts:
       # 让容器可以访问宿主机上运行的 mock server 或本地模型

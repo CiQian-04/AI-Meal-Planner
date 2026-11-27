@@ -15,7 +15,7 @@ spring:
       base-url: ${OPENAI_BASE_URL:https://api.deepseek.com}
       chat:
         options:
-          model: ${OPENAI_MODEL:deepseek-chat}
+          model: ${OPENAI_MODEL:deepseek-flash}
           temperature: 0.4
       # Enable retry so a transient upstream failure does not fail the whole planning request.
       retry:
