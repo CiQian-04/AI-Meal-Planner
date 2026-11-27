@@ -1,0 +1,35 @@
+# Java / Maven
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# Node / Vite
+node_modules/
+dist/
+.vite/
+*.local
+*.tsbuildinfo
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env & secrets
+.env
+.env.local
+*.pem
+
+# Docs build output
+site/
+
+# Local verification artifacts
+shots/
+frames/

@@ -1,0 +1,418 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "AI 菜谱规划师 API",
+    "description": "基于 Spring AI 的家庭菜谱规划服务。\n\n**核心能力**\n\n- **Function Calling**：模型在规划过程中自行调用 `lookupIngredientPrice`、\n `lookupIngredientPrices`、`estimateDishCost` 三个函数获取真实食材价格，\n 后端把每次调用记录在响应的 `toolCalls` 字段中。\n- **结构化输出**：通过 `BeanOutputConverter` 把模型输出强制转换为\n `MealPlan` JSON 结构，避免解析自由文本。\n",
+    "contact": {
+      "name": "Meal Planner",
+      "url": "https://github.com"
+    },
+    "license": {
+      "name": "Apache-2.0"
+    },
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "当前服务"
+    }
+  ],
+  "tags": [
+    {
+      "name": "食材价格",
+      "description": "与模型 Function Calling 共用的同一份价格数据"
+    },
+    {
+      "name": "菜谱规划",
+      "description": "基于 Spring AI 的家庭菜谱规划与购物清单生成"
+    }
+  ],
+  "paths": {
+    "/api/v1/plans": {
+      "post": {
+        "tags": [
+          "菜谱规划"
+        ],
+        "summary": "生成菜谱与购物清单",
+        "description": "根据天数、预算、忌口等条件调用大模型生成家庭菜单。\n\n模型在规划过程中会自行调用食材价格查询函数（lookupIngredientPrice 等）获取真实单价，\n最终以结构化 JSON 返回菜单与合并后的购物清单。响应中的 toolCalls 字段记录了模型实际\n发起过的函数调用，可用于验证 Function Calling 是否生效。",
+        "operationId": "createPlan",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "生成成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数不合法",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/prices": {
+      "get": {
+        "tags": [
+          "食材价格"
+        ],
+        "summary": "批量查询食材价格",
+        "operationId": "lookupBatch",
+        "parameters": [
+          {
+            "name": "names",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/prices/{ingredient}": {
+      "get": {
+        "tags": [
+          "食材价格"
+        ],
+        "summary": "查询单个食材价格",
+        "description": "返回与工具函数完全一致的 JSON 结果",
+        "operationId": "lookup",
+        "parameters": [
+          {
+            "name": "ingredient",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/prices/catalog": {
+      "get": {
+        "tags": [
+          "食材价格"
+        ],
+        "summary": "列出所有已知食材",
+        "description": "供前端食材选择器使用",
+        "operationId": "catalog",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PlanRequest": {
+        "type": "object",
+        "properties": {
+          "days": {
+            "type": "integer",
+            "format": "int32",
+            "maximum": 14,
+            "minimum": 1
+          },
+          "avoidSpicy": {
+            "type": "boolean"
+          },
+          "budget": {
+            "type": "number",
+            "format": "double",
+            "maximum": 100000,
+            "minimum": 10
+          },
+          "mealsPerDay": {
+            "type": "integer",
+            "format": "int32",
+            "maximum": 5,
+            "minimum": 1
+          },
+          "servings": {
+            "type": "integer",
+            "format": "int32",
+            "maximum": 10,
+            "minimum": 1
+          },
+          "preferences": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "excludedIngredients": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "avoidSpicy",
+          "budget",
+          "days"
+        ]
+      },
+      "ApiError": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "fieldErrors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "DayPlan": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "label": {
+            "type": "string"
+          },
+          "meals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Recipe"
+            }
+          },
+          "estimatedCost": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "Ingredient": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number",
+            "format": "double"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "estimatedCostPerUnit": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "MealPlan": {
+        "type": "object",
+        "properties": {
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DayPlan"
+            }
+          },
+          "estimatedTotalCost": {
+            "type": "number",
+            "format": "double"
+          },
+          "estimatedShoppingCost": {
+            "type": "number",
+            "format": "double"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "tips": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "toolCallsUsed": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PlanResponse": {
+        "type": "object",
+        "properties": {
+          "plan": {
+            "$ref": "#/components/schemas/MealPlan"
+          },
+          "shoppingList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShoppingItem"
+            }
+          },
+          "toolCalls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ToolInvocation"
+            }
+          },
+          "requestEcho": {
+            "$ref": "#/components/schemas/PlanRequest"
+          }
+        }
+      },
+      "Recipe": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "cookingMinutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "servings": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "category": {
+            "type": "string"
+          },
+          "spicyLevel": {
+            "type": "string"
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Ingredient"
+            }
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ShoppingItem": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number",
+            "format": "double"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "estimatedCost": {
+            "type": "number",
+            "format": "double"
+          },
+          "category": {
+            "type": "string"
+          },
+          "usedIn": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ToolInvocation": {
+        "type": "object",
+        "properties": {
+          "tool": {
+            "type": "string"
+          },
+          "arguments": {
+            "type": "string"
+          },
+          "result": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "AI Meal Planner",
+  "image": "mcr.microsoft.com/devcontainers/java:21-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "none",
+      "installMaven": "false",
+      "jdkVersion": "none"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    }
+  },
+  "forwardPorts": [8080, 5173],
+  "portsAttributes": {
+    "8080": { "label": "Backend API (Spring AI)", "onAutoForward": "notify" },
+    "5173": { "label": "Frontend (Vue 3)", "onAutoForward": "openPreview" }
+  },
+  "postCreateCommand": "bash scripts/dev-setup.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "vmware.vscode-boot-dev-pack",
+        "Vue.volar",
+        "dbaeumer.vscode-eslint",
+        "eamodio.gitlens",
+        "github.vscode-github-actions"
+      ],
+      "settings": {
+        "java.configuration.updateBuildConfiguration": "automatic",
+        "editor.formatOnSave": true,
+        "files.eol": "\n"
+      }
+    }
+  },
+  "remoteUser": "vscode"
+}

@@ -1,0 +1,66 @@
+package com.mealplanner.config;
+
+import com.mealplanner.tool.IngredientPriceTools;
+import com.mealplanner.tool.ToolCallRecordingAdvisor;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.ToolCallAdvisor;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.model.tool.ToolCallingManager;
+import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.ai.tool.method.MethodToolCallbackProvider;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * Wires the chat model, the tool registry and the {@link ChatClient} used by the planner.
+ */
+@Configuration
+public class ChatClientConfig {
+
+	/**
+	 * Exposes every {@code @Tool} annotated method on {@link IngredientPriceTools} to the model.
+	 */
+	@Bean
+	public ToolCallbackProvider ingredientToolProvider(IngredientPriceTools priceTools) {
+		return MethodToolCallbackProvider.builder().toolObjects(priceTools).build();
+	}
+
+	/**
+	 * A single {@link ChatClient} shared by the whole application.
+	 *
+	 * <p>Two advisors are involved:
+	 *
+	 * <ul>
+	 * <li>{@link ToolCallRecordingAdvisor} runs first and notes which tools the model asked for.
+	 * It has to sit in front of the tool-calling advisor, because that advisor consumes the
+	 * intermediate rounds before the application sees them.</li>
+	 * <li>{@link ToolCallAdvisor} drives the function-calling loop itself: the model requests a
+	 * tool, the matching Java method is executed through the {@link ToolCallingManager}, and the
+	 * result is fed back until the model produces a final answer.</li>
+	 * </ul>
+	 */
+	@Bean
+	public ChatClient chatClient(ChatModel chatModel, ToolCallbackProvider ingredientToolProvider,
+			ToolCallingManager toolCallingManager) {
+		return ChatClient.builder(chatModel)
+				.defaultToolCallbacks(ingredientToolProvider)
+				.defaultAdvisors(
+						ToolCallRecordingAdvisorHolder.ADVISOR,
+						ToolCallAdvisor.builder().toolCallingManager(toolCallingManager).build())
+				.build();
+	}
+
+	/**
+	 * Holds the single {@link ToolCallRecordingAdvisor} instance.
+	 *
+	 * <p>The advisor is stateless apart from a thread local, so one shared instance is enough and
+	 * it keeps the advisor ordering explicit.
+	 */
+	static final class ToolCallRecordingAdvisorHolder {
+
+		static final ToolCallRecordingAdvisor ADVISOR = new ToolCallRecordingAdvisor();
+
+		private ToolCallRecordingAdvisorHolder() {
+		}
+	}
+}

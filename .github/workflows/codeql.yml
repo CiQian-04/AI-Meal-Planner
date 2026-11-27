@@ -1,0 +1,54 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly scan so newly published advisories get picked up.
+    - cron: '17 4 * * 1'
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-open: false
+      matrix:
+        language: [java-typescript, javascript-typescript]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        if: matrix.language == 'java-typescript'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-and-quality
+
+      # Java needs its dependencies present for the autobuilder to work.
+      - name: Autobuild
+        if: matrix.language == 'java-typescript'
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Autobuild (JS)
+        if: matrix.language == 'javascript-typescript'
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:${{ matrix.language }}'
