@@ -38,6 +38,17 @@
 - 你把自己配置的 `OPENAI_API_KEY` 泄露在客户端或截图里
 - 部署时没有加鉴权就直接暴露到公网（本项目默认**不含**用户体系与鉴权，见下）
 
+## 已知豁免的漏洞
+
+`backend/.trivyignore` 中列出了 4 个 Spring Framework CVE（CVE-2026-47884 RCE、
+CVE-2026-47890、CVE-2026-47892）。原因：Spring Framework **6.2.x 已停止开源维护**，
+6.2.19 是该线最终版本，这些 CVE 的修复只存在于 **7.0.9**——也就是必须升级到
+Spring Boot 4.x + Spring Framework 7 才能解决。项目当前有意停在稳定线
+（Boot 3.5 + Spring AI 1.1.8），故按务实方案豁免并在此注明。
+
+升级 Boot 4.x 时，删除 `backend/.trivyignore` 里的对应条目即可恢复严格扫描。
+Tomcat 的 5 个 critical 已通过 `pom.xml` 的 `tomcat.version` 覆盖修复，无需豁免。
+
 ## 部署时务必知道的事
 
 本项目定位是**技术演示与本地工具**，开箱状态下：

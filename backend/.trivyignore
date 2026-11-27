@@ -1,0 +1,6 @@
+# Spring Framework 6.2.x 已停止开源维护（6.2.19 为最终版本），
+# 这四个 CVE 的修复只存在于 Spring Framework 7.0.9，需要升级到
+# Spring Boot 4.x 才能解决。当前按务实方案豁免；升级 Boot 后删除这些条目。
+CVE-2026-47884
+CVE-2026-47890
+CVE-2026-47892
