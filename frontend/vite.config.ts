@@ -19,6 +19,15 @@ export default defineConfig({
         target: process.env.VITE_API_TARGET ?? 'http://localhost:8080',
         changeOrigin: true,
       },
+      // The OpenAPI document and Swagger UI, mirroring the nginx setup in production.
+      '/v3': {
+        target: process.env.VITE_API_TARGET ?? 'http://localhost:8080',
+        changeOrigin: true,
+      },
+      '/swagger-ui': {
+        target: process.env.VITE_API_TARGET ?? 'http://localhost:8080',
+        changeOrigin: true,
+      },
     },
   },
 })

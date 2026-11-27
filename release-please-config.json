@@ -11,6 +11,11 @@
           "type": "json",
           "path": "frontend/package.json",
           "jsonpath": "$.version"
+        },
+        {
+          "type": "pom.xml",
+          "path": "backend/pom.xml",
+          "xpath": "//project/version"
         }
       ],
       "include-component-in-tag": false

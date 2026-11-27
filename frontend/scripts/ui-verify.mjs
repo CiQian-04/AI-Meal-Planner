@@ -122,6 +122,14 @@ try {
   const budgetValue = await page.locator('.stat-value').nth(1).innerText()
   check(budgetValue.includes('¥'), `显示实际预估成本（${budgetValue}）`)
 
+  console.log('=== 开发服务器代理 ===')
+  // The dev server proxies /api, /v3 and /swagger-ui to the backend, so the OpenAPI document
+  // is reachable through the same origin as the UI.
+  for (const path of ['/v3/api-docs', '/swagger-ui/index.html']) {
+    const response = await page.request.get(`${BASE_URL}${path}`)
+    check(response.status() === 200, `${path} 通过前端端口可访问（HTTP ${response.status()}）`)
+  }
+
   check(consoleErrors.length === 0, `无控制台错误${consoleErrors.length ? '：' + consoleErrors[0] : ''}`)
 
   await page.screenshot({ path: join(OUT_DIR, '04-final.png'), fullPage: true })

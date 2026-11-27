@@ -30,7 +30,8 @@ EXPOSE 8080
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0" \
     SPRING_PROFILES_ACTIVE=prod
 
+# The jre-jammy image has no curl, and `sh` is dash (no /dev/tcp), so the check runs under bash.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-  CMD ["sh", "-c", "curl -fsS http://localhost:8080/actuator/health || exit 1"]
+  CMD ["bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080 && printf 'GET /actuator/health HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q '\"status\":\"UP\"' <&3"]
 
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
