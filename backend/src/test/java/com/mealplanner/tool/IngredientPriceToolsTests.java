@@ -32,7 +32,7 @@ class IngredientPriceToolsTests {
 	@Test
 	@DisplayName("未知食材返回 found=false 并给出相近建议")
 	void unknownIngredientReturnsAlternatives() throws Exception {
-		JsonNode result = objectMapper.readTree(tools.lookupIngredientPrice("鸡翅"));
+		JsonNode result = objectMapper.readTree(tools.lookupIngredientPrice("不存在的稀有食材"));
 
 		assertThat(result.get("found").asBoolean()).isFalse();
 		assertThat(result.get("alternatives").isArray()).isTrue();
