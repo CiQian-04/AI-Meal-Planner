@@ -18,10 +18,11 @@ spring:
           model: ${OPENAI_MODEL:deepseek-flash}
           temperature: 0.4
           # This model is a reasoning model: tokens spent on thinking count against
-          # max-tokens. Too small a budget leaves an empty content payload and Jackson
-          # then fails with "No content to map due to end-of-input". 8192 leaves room
-          # for reasoning plus the full JSON plan after function-calling results.
-          max-tokens: ${OPENAI_MAX_TOKENS:8192}
+          # max-tokens. Too small a budget leaves an empty content payload, or worse,
+          # a JSON plan that gets cut off mid-object ("No content to map" /
+          # "模型没有返回 JSON"). DeepSeek-V4.1 supports very large outputs, so give
+          # the full multi-day plan room to finish in one response.
+          max-tokens: ${OPENAI_MAX_TOKENS:32768}
 
     # The retry prefix is `spring.ai.retry`, NOT `spring.ai.openai.retry`. Keep it at 1 so a
     # single 524 from the relay does not turn into a 90-second exponential backoff inside one
