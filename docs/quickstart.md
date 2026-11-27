@@ -12,7 +12,7 @@
 ## 一、用 Docker Compose 起栈（推荐）
 
 ```bash
-git clone https://github.com/example/meal-planner.git
+git clone https://github.com/CiQian-04/AI-Meal-Planner.git
 cd meal-planner
 
 # 配置模型端点（见下文「配置模型」）

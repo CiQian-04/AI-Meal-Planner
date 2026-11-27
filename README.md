@@ -168,7 +168,7 @@ scripts/                  本地运行与验证脚本
 
 | 文档 | 地址 |
 | --- | --- |
-| 文档站点 | <https://example.github.io/meal-planner/> |
+| 文档站点 | <https://ciqian-04.github.io/AI-Meal-Planner/> |
 | Swagger UI | <http://localhost:8080/swagger-ui.html> |
 | OpenAPI 规范 | <http://localhost:8080/v3/api-docs> |
 

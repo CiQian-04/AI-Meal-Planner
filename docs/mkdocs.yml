@@ -3,9 +3,9 @@ site_description: 基于 Spring AI Function Calling 与结构化输出的家庭�
 
 # 换成你自己的仓库地址：site_url 决定 GitHub Pages 的站点根路径，
 # repo_url 决定页面右上角「查看源码」和「编辑此页」的跳转目标。
-site_url: https://example.github.io/meal-planner/
-repo_url: https://github.com/example/meal-planner
-repo_name: meal-planner
+site_url: https://ciqian-04.github.io/AI-Meal-Planner/
+repo_url: https://github.com/CiQian-04/AI-Meal-Planner
+repo_name: AI-Meal-Planner
 edit_uri: edit/main/docs/
 
 # The config file lives inside docs/, so paths are resolved relative to it.

@@ -125,8 +125,8 @@ npx release-please --dry-run
 - 构建并推送镜像到 GitHub Container Registry：
 
 ```bash
-docker pull ghcr.io/<owner>/<repo>/backend:latest
-docker pull ghcr.io/<owner>/<repo>/frontend:latest
+docker pull ghcr.io/ciqian-04/ai-meal-planner/backend:latest
+docker pull ghcr.io/ciqian-04/ai-meal-planner/frontend:latest
 ```
 
 ### 版本号同步

@@ -6,7 +6,7 @@
 
 请使用 GitHub 的私密报告通道：
 仓库页面 → **Security** → **Report a vulnerability**，或直接访问
-`https://github.com/<owner>/meal-planner/security/advisories/new`。
+`https://github.com/CiQian-04/AI-Meal-Planner/security/advisories/new`。
 
 报告中请尽量包含：
 
