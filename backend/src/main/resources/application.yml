@@ -22,7 +22,10 @@ spring:
 
   mvc:
     problemdetails:
-      enabled: true
+      # Off so GlobalExceptionHandler's ApiError (with `message` and `fieldErrors`)
+      # actually reaches the client. With ProblemDetail on, Spring rewrites every
+      # error into RFC 7807 (`detail` field), which the frontend cannot read.
+      enabled: false
 
 springdoc:
   swagger-ui:

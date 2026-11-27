@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 import re
 import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -880,14 +881,22 @@ def build_plan(days: int, meals_per_day: int, budget: float, tool_results: list)
 
     day_plans = []
     total = 0.0
-    template_index = 0
+
+    # Shuffle the whole recipe pool so every dish gets an equal chance of appearing.
+    # Refill with a fresh shuffle only after the pool is exhausted, guaranteeing no
+    # repeats within a cycle (75 dishes >> the typical 30 meals in a 10-day plan).
+    needed = days * meals_per_day
+    pool = []
+    while len(pool) < needed:
+        batch = list(RECIPE_TEMPLATES)
+        random.shuffle(batch)
+        pool.extend(batch)
 
     for day in range(1, days + 1):
         meals = []
         day_cost = 0.0
         for _ in range(meals_per_day):
-            template = RECIPE_TEMPLATES[template_index % len(RECIPE_TEMPLATES)]
-            template_index += 1
+            template = pool.pop()
 
             ingredients = []
             meal_cost = 0.0

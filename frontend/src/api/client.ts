@@ -13,10 +13,13 @@ export async function createPlan(request: PlanRequest): Promise<PlanResponse> {
     let detail = `请求失败（HTTP ${response.status}）`
     try {
       const body = await response.json()
-      if (body?.message) detail = body.message
+      // Spring's ProblemDetail (RFC 7807) uses `detail`; our own ApiError uses `message`.
+      // application.yml enables problemdetails, so both shapes can reach here.
+      const message = body?.message ?? body?.detail
+      if (message) detail = message
       if (body?.fieldErrors && Object.keys(body.fieldErrors).length) {
         detail += `：${Object.entries(body.fieldErrors)
-          .map(([field, message]) => `${field} ${message}`)
+          .map(([field, msg]) => `${field} ${msg}`)
           .join('；')}`
       }
     } catch {
