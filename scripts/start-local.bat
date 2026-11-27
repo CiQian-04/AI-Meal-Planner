@@ -27,7 +27,7 @@ echo ============================================================
 echo.
 
 set "JAR_FOUND=no"
-for %%f in ("%ROOT%\backend\target\meal-planner-backend-*.jar") do set "JAR_FOUND=yes"
+for /f "delims=" %%f in ('dir /b /o-d "%ROOT%\backend\target\meal-planner-backend-*.jar" 2^>nul') do set "JAR_FOUND=yes"
 if "%JAR_FOUND%"=="no" (
   echo [ERROR] Backend jar not found. Build it first:
   echo   cd backend ^&^& mvn clean package -DskipTests
@@ -80,7 +80,8 @@ if exist "C:\Program Files\Java\jdk-21\bin\java.exe" set "JAVA_EXE=C:\Program Fi
 if defined JAVA_HOME if exist "%JAVA_HOME%\bin\java.exe" set "JAVA_EXE=%JAVA_HOME%\bin\java.exe"
 
 set "JAR="
-for %%f in ("%ROOT%\backend\target\meal-planner-backend-*.jar") do set "JAR=%%~f"
+REM Sort by date descending so a stale 0.2.0 jar can never shadow the new build.
+for /f "delims=" %%f in ('dir /b /o-d "%ROOT%\backend\target\meal-planner-backend-*.jar" 2^>nul') do if not defined JAR set "JAR=%ROOT%\backend\target\%%f"
 if not defined JAR (
   echo [ERROR] Backend jar not found.
   pause

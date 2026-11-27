@@ -6,10 +6,12 @@ import com.mealplanner.model.PlanResponse;
 import com.mealplanner.model.ShoppingItem;
 import com.mealplanner.tool.ToolCallRecordingAdvisor;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClient.CallResponseSpec;
+import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,60 +24,89 @@ import org.springframework.stereotype.Service;
  * <li>It decides it needs prices and <em>itself</em> calls {@code lookupIngredientPrice} /
  * {@code lookupIngredientPrices} / {@code estimateDishCost}. Spring AI executes the Java methods
  * and feeds the results back into the conversation.</li>
- * <li>The final answer is converted into a {@link MealPlan} via
- * {@code BeanOutputConverter}, so the response is guaranteed to be valid JSON of the expected
- * shape rather than free text we have to parse hopefully.</li>
+ * <li>The final answer is converted into a {@link MealPlan} with a tolerant JSON parser that
+ * accepts a reasoning model's preamble or Markdown fence, and the whole exchange is retried
+ * a few times when the model returns empty content.</li>
  * </ol>
  */
 @Service
 public class MealPlanService {
 
 	private static final Logger log = LoggerFactory.getLogger(MealPlanService.class);
+	private static final int MAX_ATTEMPTS = 3;
 
 	private final ChatClient chatClient;
+	private final ChatClient plainChatClient;
 	private final ShoppingListService shoppingListService;
+	private final BeanOutputConverter<MealPlan> outputConverter = new BeanOutputConverter<>(MealPlan.class);
 
-	public MealPlanService(ChatClient chatClient, ShoppingListService shoppingListService) {
+	public MealPlanService(@Qualifier("chatClient") ChatClient chatClient,
+			@Qualifier("plainChatClient") ChatClient plainChatClient,
+			ShoppingListService shoppingListService) {
 		this.chatClient = chatClient;
+		this.plainChatClient = plainChatClient;
 		this.shoppingListService = shoppingListService;
 	}
 
 	public PlanResponse plan(PlanRequest request) {
-		try {
-			return callModel(request, false);
+		EmptyModelResponseException lastFailure = null;
+		for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+			try {
+				return callModel(request, attempt);
+			}
+			catch (EmptyModelResponseException ex) {
+				lastFailure = ex;
+				if (attempt < MAX_ATTEMPTS) {
+					log.warn("Model response unusable (attempt {}/{}) : {}. Retrying with stricter JSON-only instructions.",
+							attempt, MAX_ATTEMPTS, ex.getMessage());
+				}
+			}
 		}
-		catch (EmptyModelResponseException ex) {
-			// Reasoning models sometimes spend the whole token budget on thinking and return
-			// an empty content payload, which Jackson reports as "No content to map".
-			// Retry once with an explicit JSON-only instruction before giving up.
-			log.warn("Model returned an empty/unparseable response, retrying once: {}", ex.getMessage());
-			return callModel(request, true);
-		}
+		throw lastFailure;
 	}
 
-	private PlanResponse callModel(PlanRequest request, boolean jsonOnly) {
+	private PlanResponse callModel(PlanRequest request, int attempt) {
 		// Tool callbacks are registered once on the ChatClient bean, so the model can call
 		// them without repeating the wiring here.
 		ToolCallRecordingAdvisor.reset();
 
-		String user = userPrompt(request) + (jsonOnly ? "\n\n请严格只输出 JSON，不要任何解释文字。" : "");
+		String user = userPrompt(request);
+		if (attempt > 1) {
+			user += "\n\n重要：上一步没有拿到合法 JSON。这次严格只输出一个 JSON 对象，"
+					+ "第一个字符必须是 {，最后一个字符必须是 }，不要输出任何解释文字、Markdown 或思考过程。";
+		}
+		// Keep the generated JSON schema in the system prompt, but read the raw text ourselves
+		// so reasoning models that prepend a sentence can still be parsed.
 		CallResponseSpec spec = chatClient.prompt()
-				.system(systemPrompt(request))
+				.system(systemPrompt(request) + "\n\n" + outputConverter.getFormat())
 				.user(user)
 				.call();
 
+		// content() actually triggers the advisor chain, so read it before collecting tool calls.
+		String raw = spec.content();
+		List<PlanResponse.ToolInvocation> invocations = extractToolCalls();
 		MealPlan plan;
 		try {
-			plan = spec.entity(MealPlan.class);
+			plan = parsePlan(raw);
 		}
-		catch (Exception ex) {
-			throw new EmptyModelResponseException(ex.getMessage(), ex);
+		catch (EmptyModelResponseException ex) {
+			if (invocations.isEmpty()) {
+				throw ex;
+			}
+			log.warn("Model produced no JSON after tool calls; asking once more without tools using the collected prices: {}",
+					ex.getMessage());
+			String enrichedUser = user + "\n\n已查到的真实价格：\n" + formatInvocations(invocations)
+					+ "\n\n严禁再调用任何工具。直接输出完整菜单 JSON。";
+			String fallback = plainChatClient.prompt()
+					.system(systemPrompt(request) + "\n\n" + outputConverter.getFormat())
+					.user(enrichedUser)
+					.call()
+					.content();
+			plan = parsePlan(fallback);
 		}
-		if (plan == null || plan.days() == null || plan.days().isEmpty()) {
+		if (plan.days() == null || plan.days().isEmpty()) {
 			throw new EmptyModelResponseException("模型返回的菜单为空");
 		}
-
-		List<PlanResponse.ToolInvocation> invocations = extractToolCalls();
 
 		List<ShoppingItem> shoppingList = shoppingListService.build(plan);
 		double shoppingCost = shoppingListService.totalCost(shoppingList);
@@ -105,6 +136,88 @@ public class MealPlanService {
 		}
 	}
 
+	private MealPlan parsePlan(String raw) {
+		if (raw == null || raw.isBlank()) {
+			throw new EmptyModelResponseException("模型返回了空内容");
+		}
+		String text = stripCodeFence(raw.trim());
+		try {
+			MealPlan direct = outputConverter.convert(text);
+			if (direct != null && direct.days() != null && !direct.days().isEmpty()) {
+				return direct;
+			}
+		}
+		catch (Exception ignored) {
+			// Fall through to the tolerant extractor below.
+		}
+		String json = extractFirstJsonObject(text);
+		if (json == null) {
+			throw new EmptyModelResponseException("模型没有返回 JSON: " + preview(text));
+		}
+		try {
+			return outputConverter.convert(json);
+		}
+		catch (Exception ex) {
+			throw new EmptyModelResponseException("模型返回的 JSON 无法解析: " + ex.getMessage(), ex);
+		}
+	}
+
+	private static String stripCodeFence(String text) {
+		if (!text.startsWith("```")) {
+			return text;
+		}
+		int firstNewline = text.indexOf('\n');
+		String body = firstNewline < 0 ? "" : text.substring(firstNewline + 1);
+		int closing = body.lastIndexOf("```");
+		if (closing >= 0) {
+			body = body.substring(0, closing);
+		}
+		return body.trim();
+	}
+
+	/** Extracts the first balanced JSON object, tolerating prose before or after it. */
+	static String extractFirstJsonObject(String text) {
+		int start = text.indexOf('{');
+		if (start < 0) {
+			return null;
+		}
+		int depth = 0;
+		boolean inString = false;
+		boolean escaped = false;
+		for (int i = start; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (inString) {
+				if (escaped) {
+					escaped = false;
+				}
+				else if (c == '\\') {
+					escaped = true;
+				}
+				else if (c == '"') {
+					inString = false;
+				}
+				continue;
+			}
+			if (c == '"') {
+				inString = true;
+			}
+			else if (c == '{') {
+				depth++;
+			}
+			else if (c == '}') {
+				depth--;
+				if (depth == 0) {
+					return text.substring(start, i + 1);
+				}
+			}
+		}
+		return null;
+	}
+
+	private static String preview(String text) {
+		return text.length() <= 120 ? text : text.substring(0, 120) + "...";
+	}
+
 	/**
 	 * Rewrites any cost figure the model stated in its summary so it matches the authoritative
 	 * total computed here.
@@ -121,6 +234,15 @@ public class MealPlanService {
 		String formal = String.format(java.util.Locale.ROOT, "%.2f", modelCost);
 		String actual = String.format(java.util.Locale.ROOT, "%.2f", actualCost);
 		return summary.replace(formal, actual);
+	}
+
+	private static String formatInvocations(List<PlanResponse.ToolInvocation> invocations) {
+		StringBuilder sb = new StringBuilder();
+		for (PlanResponse.ToolInvocation invocation : invocations) {
+			sb.append("- ").append(invocation.tool()).append('(').append(invocation.arguments()).append(") -> ")
+					.append(invocation.result() == null ? "" : invocation.result()).append('\n');
+		}
+		return sb.toString();
 	}
 
 	/**

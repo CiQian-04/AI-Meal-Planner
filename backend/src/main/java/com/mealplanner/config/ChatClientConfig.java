@@ -51,6 +51,16 @@ public class ChatClientConfig {
 	}
 
 	/**
+	 * A tool-free client used as a fallback. Some reasoning models keep re-requesting tools and
+	 * never emit the final JSON, so after collecting real prices we ask them again with the
+	 * prices already in the prompt and no tools available.
+	 */
+	@Bean
+	public ChatClient plainChatClient(ChatModel chatModel) {
+		return ChatClient.builder(chatModel).build();
+	}
+
+	/**
 	 * Holds the single {@link ToolCallRecordingAdvisor} instance.
 	 *
 	 * <p>The advisor is stateless apart from a thread local, so one shared instance is enough and
