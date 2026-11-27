@@ -7,15 +7,15 @@ spring:
     name: meal-planner-backend
 
   # The OpenAI starter is used as a generic OpenAI-compatible client.
-  # Default to DeepSeek (directly reachable in mainland China); override with
-  # OPENAI_BASE_URL / OPENAI_MODEL for OpenAI, Qwen, Ollama, etc.
+  # Default to an OpenAI-compatible relay reachable in mainland China;
+  # override with OPENAI_BASE_URL / OPENAI_MODEL for DeepSeek, Qwen, Ollama, etc.
   ai:
     openai:
       api-key: ${OPENAI_API_KEY:sk-not-configured}
-      base-url: ${OPENAI_BASE_URL:https://api.deepseek.com}
+      base-url: ${OPENAI_BASE_URL:https://api.li1023.com}
       chat:
         options:
-          model: ${OPENAI_MODEL:deepseek-flash}
+          model: ${OPENAI_MODEL:deepseek-v4.1-flash}
           temperature: 0.4
       # Enable retry so a transient upstream failure does not fail the whole planning request.
       retry:

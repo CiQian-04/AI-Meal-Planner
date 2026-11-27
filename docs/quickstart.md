@@ -17,8 +17,8 @@ cd meal-planner
 
 # 配置模型端点（见下文「配置模型」）
 export OPENAI_API_KEY=sk-xxxx
-export OPENAI_BASE_URL=https://api.deepseek.com
-export OPENAI_MODEL=deepseek-flash
+export OPENAI_BASE_URL=https://api.li1023.com
+export OPENAI_MODEL=deepseek-v4.1-flash
 
 docker compose up --build
 ```
@@ -52,26 +52,26 @@ npm run dev
 | 变量 | 说明 | 默认值 |
 | --- | --- | --- |
 | `OPENAI_API_KEY` | API 密钥 | `sk-not-configured` |
-| `OPENAI_BASE_URL` | 接口根地址 | `https://api.deepseek.com` |
-| `OPENAI_MODEL` | 模型名 | `deepseek-flash` |
+| `OPENAI_BASE_URL` | 接口根地址 | `https://api.li1023.com` |
+| `OPENAI_MODEL` | 模型名 | `deepseek-v4.1-flash` |
 
-默认使用 DeepSeek，国内可直连。DeepSeek 密钥在 https://platform.deepseek.com 申请。
+默认使用 OpenAI 兼容中转站（https://api.li1023.com），国内可直连，账户需自行充值；密钥由中转站提供。
 
 ### 常见第三方端点
 
 === "DeepSeek"
 
     ```bash
-    export OPENAI_BASE_URL=https://api.deepseek.com
-    export OPENAI_MODEL=deepseek-flash
+    export OPENAI_BASE_URL=https://api.li1023.com
+    export OPENAI_MODEL=deepseek-v4.1-flash
     export OPENAI_API_KEY=sk-xxxx
     ```
 
     ??? tip "模型名与余额"
-        用 `curl https://api.deepseek.com/v1/models -H "Authorization: Bearer $OPENAI_API_KEY"`
-        查看账号实际可用的模型名（不同账号可能是 `deepseek-flash` / `deepseek-chat` / `deepseek-v4-pro`），
+        用 `curl https://api.li1023.com/v1/models -H "Authorization: Bearer $OPENAI_API_KEY"`
+        查看账号实际可用的模型名（不同账号可能是 `deepseek-v4.1-flash` / `deepseek-chat` / `deepseek-v4-pro`），
         把 `OPENAI_MODEL` 改成列表里的名字。若调用报 `402 Insufficient Balance`，
-        说明账户余额不足，需到 https://platform.deepseek.com 充值。
+        说明账户余额不足，需到所用服务方（中转站 / DeepSeek 官方）充值。
 
 === "阿里云百炼（Qwen）"
 
