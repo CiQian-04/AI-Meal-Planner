@@ -42,7 +42,10 @@ for _ in $(seq 1 40); do
 done
 
 echo "==> backend on :$BACKEND_PORT"
-java -Dfile.encoding=UTF-8 -jar "$ROOT/backend/target/meal-planner-backend-0.1.0.jar" \
+# Release Please bumps the version in pom.xml, so the jar name changes with every release.
+JAR="$(find "$ROOT/backend/target" -maxdepth 1 -name 'meal-planner-backend-*.jar' ! -name 'original-*' | head -n 1)"
+[[ -n "$JAR" ]] || { echo "backend jar not found; run mvn package first"; exit 1; }
+java -Dfile.encoding=UTF-8 -jar "$JAR" \
   --server.port="$BACKEND_PORT" \
   --spring.ai.openai.base-url="http://127.0.0.1:$MOCK_PORT" \
   --spring.ai.openai.api-key=mock \
