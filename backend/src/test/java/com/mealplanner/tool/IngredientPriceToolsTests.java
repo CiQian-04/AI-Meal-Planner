@@ -26,7 +26,7 @@ class IngredientPriceToolsTests {
 		assertThat(result.get("found").asBoolean()).isTrue();
 		assertThat(result.get("unitPrice").asDouble()).isEqualTo(9.90);
 		assertThat(result.get("unit").asText()).isEqualTo("500g");
-		assertThat(result.get("category").asText()).isEqualTo("肉类");
+		assertThat(result.get("category").asText()).isEqualTo("肉禽");
 	}
 
 	@Test
