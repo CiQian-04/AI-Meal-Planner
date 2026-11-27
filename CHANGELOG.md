@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/CiQian-04/AI-Meal-Planner/compare/v0.3.0...v0.3.1) (2026-11-27)
+
+
+### Bug Fixes
+
+* 推理模型空响应兜底为无工具 JSON 调用并修复旧 jar 启动 ([9156b15](https://github.com/CiQian-04/AI-Meal-Planner/commit/9156b1557a3e6b1da3d3229cbd38e1c22538dca9))
+
 ## [0.3.0](https://github.com/CiQian-04/AI-Meal-Planner/compare/v0.2.0...v0.3.0) (2026-11-27)
 
 
