@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 安全问题
+    url: https://github.com/<owner>/meal-planner/security/advisories/new
+    about: 请勿用公开 Issue 报告漏洞，走私密报告通道（见 SECURITY.md）
+  - name: 使用问题与讨论
+    url: https://github.com/<owner>/meal-planner/discussions
+    about: 配置模型端点、跑不起来、想聊聊实现思路，都可以在这里问

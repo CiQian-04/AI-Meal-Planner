@@ -131,15 +131,41 @@ docker pull ghcr.io/<owner>/<repo>/frontend:latest
 
 ### 版本号同步
 
-`release-please-config.json` 里配置了 `extra-files`，
-发版时会自动同步更新 `frontend/package.json` 的 `version` 字段。
+`release-please-config.json` 里配置了 `extra-files`，发版时会同时更新三处版本号：
+`frontend/package.json` 的 `version` 字段、`backend/pom.xml` 的 `<project><version>`，
+以及 `CHANGELOG.md`。
+
+### 第一次推仓库前要做的事
+
+默认分支叫 `main`，7 个工作流全部只监听 `main`。如果仓库是 `git init` 出来的，先改名：
+
+```bash
+git branch -m master main
+git push -u origin main
+```
+
+还要改掉仓库地址占位符，否则 Pages 站点、徽章和「编辑此页」链接都指向不存在的仓库：
+
+```bash
+grep -rn "example.github.io\|github.com/example\|<owner>" --include="*.md" --include="*.yml" .
+```
+
+| 文件 | 要改的字段 |
+| --- | --- |
+| `docs/mkdocs.yml` | `site_url`、`repo_url`、`repo_name`（`edit_uri` 里的分支名要对齐） |
+| `README.md` | 「文档」表格里的文档站点地址 |
+| `docs/quickstart.md` | `git clone` 的仓库地址 |
+| `.github/ISSUE_TEMPLATE/config.yml` | 两处 URL 里的 `<owner>` |
+
+最后去 GitHub 仓库的 **Settings → Pages** 把 Source 设为 **GitHub Actions**，
+否则 `docs-pages.yml` 部署会失败。
 
 ## 文档站点
 
 ```bash
 pip install -r docs/requirements.txt
-mkdocs serve      # 本地预览 http://127.0.0.1:8000
-mkdocs build      # 构建到 site/
+mkdocs serve --config-file docs/mkdocs.yml   # 本地预览 http://127.0.0.1:8000
+mkdocs build --config-file docs/mkdocs.yml   # 构建到 site/
 ```
 
 `docs-pages.yml` 在 `docs/` 变更时自动构建并发布到 GitHub Pages。

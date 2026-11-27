@@ -206,6 +206,21 @@ Spring AI 会把工具定义发给模型，但执行函数调用循环的是 `To
 工具输出会作为一条 `role=tool` 消息追加进对话，跟**下一次**请求一起回来。
 所以记录结果要在 advisor 的 `before()` 里读 `ToolResponseMessage`，再回填到上一条调用记录上。
 
+## 参与贡献
+
+提交信息用 [Conventional Commits](https://www.conventionalcommits.org/)，Release Please 依赖它判断版本号。
+
+```bash
+cd backend && mvn -B -ntp verify      # 后端测试
+cd frontend && npm run type-check     # 前端类型检查
+bash scripts/verify.sh                # 不起浏览器，验证接口端到端
+bash scripts/ui-verify.sh             # 真浏览器跑一遍完整操作
+```
+
+- [贡献指南](CONTRIBUTING.md) —— 开发流程、代码风格、文档同步要求
+- [行为准则](CODE_OF_CONDUCT.md)
+- [安全策略](SECURITY.md) —— 怎么报漏洞，以及**部署到公网前必须做的事**
+
 ## License
 
 [Apache-2.0](LICENSE)

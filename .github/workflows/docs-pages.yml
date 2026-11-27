@@ -35,7 +35,10 @@ jobs:
         run: pip install -r docs/requirements.txt
 
       - name: Build site
-        run: mkdocs build --strict --config-file docs/mkdocs.yml --site-dir site
+        # site_dir comes from docs/mkdocs.yml (= ../site). Do not pass --site-dir here:
+        # a relative CLI value is resolved against docs_dir, which would land the output
+        # inside docs/ and make the strict build abort.
+        run: mkdocs build --strict --config-file docs/mkdocs.yml
 
       - name: Export the OpenAPI specification
         run: python docs/export_openapi.py

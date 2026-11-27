@@ -1,5 +1,10 @@
 # 贡献指南
 
+## 提交之前
+
+- 发现安全漏洞？**不要开公开 Issue**，走 [SECURITY.md](SECURITY.md) 的私密报告通道。
+- 参与本项目即表示你同意遵守 [行为准则](CODE_OF_CONDUCT.md)。
+
 ## 开发流程
 
 ```bash
