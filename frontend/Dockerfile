@@ -15,6 +15,10 @@ RUN npm run build
 # ---------- Stage 2: nginx ----------
 FROM nginx:1.27-alpine AS runtime
 
+# Upgrade base packages so CVEs published after the base image build
+# (e.g. brotli-libs CVE-2026-111497) are patched at build time.
+RUN apk upgrade --no-cache
+
 COPY --from=build /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
