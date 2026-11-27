@@ -18,7 +18,7 @@ jobs:
     name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
     strategy:
-      fail-open: false
+      fail-fast: false
       matrix:
         language: [java-kotlin, javascript-typescript]
 
