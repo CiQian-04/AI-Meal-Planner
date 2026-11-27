@@ -20,7 +20,7 @@
 	<properties>
 		<java.version>21</java.version>
 		<spring-ai.version>1.1.8</spring-ai.version>
-		<springdoc.version>2.8.16</springdoc.version>
+		<springdoc.version>3.2.1</springdoc.version>
 		<!-- Override the Boot-managed Tomcat to pick up CVE fixes (10.1.55 in Boot 3.5.16,
 		     criticals fixed from 10.1.56/58/59). Drop this once Boot ships a newer Tomcat. -->
 		<tomcat.version>10.1.62</tomcat.version>
