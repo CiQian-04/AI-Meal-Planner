@@ -40,16 +40,12 @@ class MealPlannerApplicationTests {
 	}
 
 	@Test
-	@DisplayName("三个价格工具函数都注册到了模型")
-	void allPriceToolsAreRegistered() {
+	@DisplayName("只向模型暴露批量查价工具")
+	void onlyBatchPriceLookupIsRegistered() {
 		ToolCallback[] callbacks = ingredientToolProvider.getToolCallbacks();
 
-		assertThat(callbacks).hasSize(3);
-		assertThat(callbacks).extracting(callback -> callback.getToolDefinition().name())
-				.containsExactlyInAnyOrder(
-						"lookupIngredientPrice",
-						"lookupIngredientPrices",
-						"estimateDishCost");
+		assertThat(callbacks).hasSize(1);
+		assertThat(callbacks[0].getToolDefinition().name()).isEqualTo("lookupIngredientPrices");
 	}
 
 	@Test

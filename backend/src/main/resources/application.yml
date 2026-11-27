@@ -22,9 +22,12 @@ spring:
           # then fails with "No content to map due to end-of-input". 8192 leaves room
           # for reasoning plus the full JSON plan after function-calling results.
           max-tokens: ${OPENAI_MAX_TOKENS:8192}
-      # Enable retry so a transient upstream failure does not fail the whole planning request.
-      retry:
-        max-attempts: 2
+
+    # The retry prefix is `spring.ai.retry`, NOT `spring.ai.openai.retry`. Keep it at 1 so a
+    # single 524 from the relay does not turn into a 90-second exponential backoff inside one
+    # planning request.
+    retry:
+      max-attempts: 1
 
   mvc:
     problemdetails:

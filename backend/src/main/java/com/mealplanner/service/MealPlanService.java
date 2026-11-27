@@ -273,6 +273,7 @@ public class MealPlanService {
 				4. 最后一次性输出完整的菜单 JSON。
 
 				硬性要求：
+				- 你只能调用 lookupIngredientPrices 这一个工具，并且最多调用一次；拿到价格后必须立即输出最终 JSON。
 				- 严格输出 JSON，不要输出 Markdown 代码块标记或任何解释性文字。
 				- estimatedTotalCost 为各道菜成本之和；estimatedShoppingCost 为合并同类食材后的实际采购成本。
 				- spicyLevel 在用户要求不吃辣时必须为 "none"。

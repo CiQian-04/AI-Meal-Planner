@@ -2,10 +2,12 @@ package com.mealplanner.config;
 
 import com.mealplanner.tool.IngredientPriceTools;
 import com.mealplanner.tool.ToolCallRecordingAdvisor;
+import java.util.Arrays;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.ToolCallAdvisor;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.model.tool.ToolCallingManager;
+import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.tool.method.MethodToolCallbackProvider;
 import org.springframework.context.annotation.Bean;
@@ -18,11 +20,19 @@ import org.springframework.context.annotation.Configuration;
 public class ChatClientConfig {
 
 	/**
-	 * Exposes every {@code @Tool} annotated method on {@link IngredientPriceTools} to the model.
+	 * Exposes only the batch price lookup to the model.
+	 *
+	 * <p>Some reasoning models turn every dish into another {@code estimateDishCost} round, which
+	 * multiplies the number of upstream requests and can blow the request budget. Exposing the one
+	 * batch lookup keeps the function-calling showcase intact while keeping the tool loop short.
 	 */
 	@Bean
 	public ToolCallbackProvider ingredientToolProvider(IngredientPriceTools priceTools) {
-		return MethodToolCallbackProvider.builder().toolObjects(priceTools).build();
+		ToolCallback[] all = MethodToolCallbackProvider.builder().toolObjects(priceTools).build().getToolCallbacks();
+		ToolCallback[] priceLookupOnly = Arrays.stream(all)
+				.filter(callback -> "lookupIngredientPrices".equals(callback.getToolDefinition().name()))
+				.toArray(ToolCallback[]::new);
+		return () -> priceLookupOnly;
 	}
 
 	/**
