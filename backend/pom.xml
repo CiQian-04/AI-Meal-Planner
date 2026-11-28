@@ -11,7 +11,7 @@
 
 	<groupId>com.mealplanner</groupId>
 	<artifactId>meal-planner-backend</artifactId>
-	<version>0.3.1</version>
+	<version>0.4.0</version>
 	<name>AI Meal Planner Backend</name>
 	<description>Spring AI powered meal planner: function calling + structured output</description>
 
