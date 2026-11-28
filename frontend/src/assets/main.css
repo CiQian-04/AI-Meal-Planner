@@ -637,3 +637,109 @@ button {
 .footer a:hover {
   text-decoration: underline;
 }
+
+/* Home workspace: warm, legible and deliberately calm. */
+:root {
+  --bg: #f8f7f2;
+  --surface: #fffefa;
+  --border: #e8e4d9;
+  --text: #282d25;
+  --text-muted: #73786b;
+  --primary: #bb4f32;
+  --primary-dark: #973b27;
+  --accent: #47745c;
+  --radius: 16px;
+  --shadow: 0 8px 26px rgba(54, 51, 37, .045);
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--bg); font-size: 15px; }
+.container { max-width: 1160px; padding-right: 30px; padding-left: 30px; }
+.site-header { background: rgba(255,254,250,.92); border-bottom: 1px solid var(--border); }
+.header-inner { min-height: 76px; display:flex; align-items:center; justify-content:space-between; }
+.brand { display:flex; align-items:center; gap:11px; color:var(--text); text-decoration:none; font-weight:700; letter-spacing:.02em; }
+.brand-mark { display:grid; place-items:center; width:38px; height:38px; background:#e9eee3; color:#47745c; border-radius:12px; font-family:serif; font-size:19px; }
+.brand small { display:block; font-size:9px; font-weight:600; letter-spacing:.15em; color:var(--text-muted); }
+.preferences-link { color:var(--text); text-decoration:none; font-size:13px; padding:10px 15px; border:1px solid var(--border); border-radius:999px; background:var(--surface); }
+.preferences-link span { color:var(--primary); margin-left:5px; }
+.preferences-link:hover { border-color:#c8bba4; }
+.page-content { padding-top:48px; }
+.welcome { min-height:210px; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:10px 7% 34px; }
+.eyebrow { margin:0 0 10px; color:var(--accent); font-size:10px; font-weight:700; letter-spacing:.16em; }
+.welcome h1 { margin:0; font-family:'Songti SC','Noto Serif SC',serif; font-size:clamp(28px,4vw,43px); line-height:1.3; letter-spacing:-.04em; font-weight:600; }
+.welcome-copy { margin:12px 0 0; color:var(--text-muted); max-width:560px; }
+.welcome-note { width:118px; height:118px; flex:none; display:flex; flex-direction:column; justify-content:center; position:relative; padding-left:20px; background:#ecefe5; border-radius:50%; color:#48644f; transform:rotate(5deg); }
+.welcome-note span { font-size:11px; }.welcome-note strong { font:600 19px/1.15 'Songti SC','Noto Serif SC',serif; }.welcome-note i { position:absolute; right:13px; top:14px; font-style:normal; font-size:23px; color:#bd704c; }
+.planner-section { scroll-margin-top:20px; }
+.panel { border-color:var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:26px 30px; margin-bottom:20px; }
+.form-heading { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:23px; }
+.form-heading .eyebrow { margin-bottom:4px; }
+.panel-title { color:var(--text); font-size:21px; letter-spacing:-.02em; margin:0; }
+.step-mark { color:var(--primary); font-size:12px; font-weight:700; font-variant-numeric:tabular-nums; }.step-mark i { color:#a7a79a; font-style:normal; font-weight:500; }
+.form-section-label { display:flex; align-items:center; gap:12px; margin:20px 0 13px; }
+.form-section-label > span { color:var(--primary); font-size:11px; font-weight:700; }
+.form-section-label strong,.form-section-label small { display:block; }.form-section-label strong { font-size:14px; }.form-section-label small { color:var(--text-muted); font-size:12px; margin-top:1px; }
+.meal-fields { grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
+.field label { color:#62675c; font-weight:600; font-size:12px; margin-bottom:7px; }
+.field input[type='number'],.field input[type='text'],.field select { min-height:44px; border-color:#dfdbd0; border-radius:10px; background:#fff; }
+.field input:focus,.field select:focus { border-color:#9aab91; box-shadow:0 0 0 3px rgba(71,116,92,.12); }
+.preference-section { border-top:1px solid #eeeae1; margin-top:24px; padding-top:2px; }
+.preference-fields { grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+.switch-row { margin-top:14px; min-height:34px; color:var(--text); font-size:14px; }
+.staple-field { border:0; padding:0; margin:14px 0 0; }
+.staple-field legend { padding:0; margin-bottom:8px; color:#62675c; font-size:12px; font-weight:600; }
+.staple-options { display:flex; flex-wrap:wrap; gap:8px; }
+.staple-options button { min-height:40px; padding:7px 16px; color:var(--text); background:#fff; border:1px solid var(--border); border-radius:999px; }
+.staple-options button[aria-pressed='true'] { color:#365c44; background:#edf2e9; border-color:#aabda5; font-weight:650; }
+.staple-options button:hover { border-color:#aabda5; }
+.staple-field small { display:block; margin-top:7px; color:var(--text-muted); font-size:12px; }
+.switch .slider { background:#c8c9bd; }.switch input:focus-visible + .slider { outline:3px solid rgba(71,116,92,.3); outline-offset:2px; }
+.chip-input input { flex:1; min-width:120px; }
+.chip { background:#f5eee6; color:#8b4b35; border-color:#ead8ca; }
+.actions { margin-top:25px; padding-top:20px; border-top:1px solid #eeeae1; }
+.btn { min-height:44px; border-radius:10px; transition:background-color .16s ease,border-color .16s ease,transform .16s ease; }
+.btn-primary { background:var(--primary); font-weight:650; padding-right:23px; padding-left:23px; }
+.btn-primary:hover:not(:disabled) { background:var(--primary-dark); transform:translateY(-1px); }
+.btn-ghost { border-color:var(--border); }.btn-ghost:hover:not(:disabled) { border-color:#b9ad99; color:var(--primary-dark); }
+.results-overview .panel-title,.recipes-section .panel-title,.shopping-section .panel-title { margin-bottom:19px; }
+.summary-grid { gap:10px; }.stat { border-radius:12px; background:#f8f7f1; border-color:#ece8de; }.stat-value { font-variant-numeric:tabular-nums; }
+.day-header { border-top:1px solid #eeeae1; padding-top:17px; margin-top:22px; justify-content:space-between; }.day-header h3 { font-size:17px; }
+.recipe-grid { grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr)); gap:12px; }
+.recipe-card { border-color:#ebe6db; border-radius:13px; box-shadow:0 3px 12px rgba(54,51,37,.025); }.recipe-card:hover { border-color:#d9b5a3; box-shadow:0 7px 18px rgba(120,73,50,.08); transform:translateY(-2px); }
+.shopping-layout { grid-template-columns:minmax(0,1fr) 280px; gap:24px; }
+.shop-item { min-height:44px; align-items:center; gap:12px; border-bottom-style:solid; border-color:#efede6; }.shop-item input[type='checkbox'] { width:19px; height:19px; }
+.shop-name { line-height:1.45; }.shop-qty { display:inline-block; margin-left:4px; }.shop-cost { font-weight:600; }
+.side-card { border-radius:12px; background:#f8f7f1; border-color:#ece8de; }
+.empty { border-style:dashed; background:rgba(255,254,250,.65); box-shadow:none; }
+.footer { border-color:var(--border); }
+a:focus-visible,button:focus-visible,input:focus-visible { outline:3px solid rgba(71,116,92,.35); outline-offset:2px; }
+
+@media (max-width:760px) {
+  .container { padding-right:18px; padding-left:18px; }
+  .page-content { padding-top:26px; }
+  .header-inner { min-height:66px; }
+  .welcome { min-height:0; padding:12px 2px 24px; }
+  .welcome-note { width:88px; height:88px; padding-left:14px; }.welcome-note strong { font-size:16px; }.welcome-note i { font-size:18px; right:9px; top:9px; }
+  .welcome-copy { font-size:14px; }
+  .panel { padding:21px 19px; margin-bottom:15px; }
+  .meal-fields { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .preference-fields { grid-template-columns:1fr; gap:14px; }
+  .form-heading { margin-bottom:18px; }
+  .shopping-layout { grid-template-columns:minmax(0,1fr); }
+  .summary-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .recipe-grid { grid-template-columns:1fr; }
+}
+@media (max-width:420px) {
+  .container { padding-right:14px; padding-left:14px; }
+  .brand-mark { width:34px; height:34px; }.preferences-link { padding:8px 11px; font-size:12px; }
+  .welcome { align-items:flex-start; }.welcome-note { width:68px; height:68px; padding-left:10px; }.welcome-note span { font-size:9px; }.welcome-note strong { font-size:13px; }.welcome-note i { font-size:14px; }
+  .welcome h1 { font-size:27px; }.welcome-copy { font-size:13px; }
+  .panel { padding:19px 15px; }
+  .meal-fields { gap:10px; }
+  .field input[type='number'],.field input[type='text'] { padding:9px; font-size:16px; }
+  .actions { gap:8px; }.actions .btn-primary { flex:1; }
+  .shop-item { align-items:flex-start; }.shop-cost { font-size:13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+}

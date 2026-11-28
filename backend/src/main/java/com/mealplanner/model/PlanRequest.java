@@ -3,6 +3,7 @@ package com.mealplanner.model;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,13 @@ public record PlanRequest(
 		@Min(1) @Max(5) Integer mealsPerDay,
 		@Min(1) @Max(10) Integer servings,
 		List<String> preferences,
-		List<String> excludedIngredients) {
+		List<String> excludedIngredients,
+		@Pattern(regexp = "ANY|RICE|NOODLES") String staplePreference) {
+
+	public PlanRequest(Integer days, Boolean avoidSpicy, Double budget, Integer mealsPerDay, Integer servings,
+			List<String> preferences, List<String> excludedIngredients) {
+		this(days, avoidSpicy, budget, mealsPerDay, servings, preferences, excludedIngredients, "ANY");
+	}
 
 	public int daysOrDefault() {
 		return this.days == null ? 3 : this.days;

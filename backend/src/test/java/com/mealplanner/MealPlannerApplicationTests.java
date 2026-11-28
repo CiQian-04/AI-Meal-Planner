@@ -23,7 +23,8 @@ import org.springframework.ai.tool.ToolCallbackProvider;
 @SpringBootTest(properties = {
 		"spring.ai.openai.api-key=mock",
 		"spring.ai.openai.base-url=http://127.0.0.1:1",
-		"spring.ai.openai.chat.options.model=mock-model"
+		"spring.ai.openai.chat.options.model=mock-model",
+		"mealplanner.prices.moa-sync.enabled=false"
 })
 class MealPlannerApplicationTests {
 

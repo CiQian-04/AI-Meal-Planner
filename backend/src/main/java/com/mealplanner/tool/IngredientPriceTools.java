@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,7 @@ public class IngredientPriceTools {
 	 * <p>Values are representative Chinese supermarket prices in CNY, deliberately small and
 	 * reviewable so the demo output stays believable for a ~100 CNY budget.
 	 */
-	private static final Map<String, IngredientPrice> PRICE_DB = new LinkedHashMap<>();
+	private static final Map<String, IngredientPrice> PRICE_DB = new ConcurrentHashMap<>();
 
 	static {
 		// 蔬菜
@@ -204,6 +205,17 @@ public class IngredientPriceTools {
 
 	private static void put(String name, String unit, double unitPrice, String category) {
 		PRICE_DB.put(normalize(name), new IngredientPrice(true, name, unit, unitPrice, category, List.of()));
+	}
+
+	/** Replace a price with an externally published, normalized price. */
+	public void updatePublishedPrice(String name, String unit, double unitPrice, String category,
+			java.time.LocalDate priceDate) {
+		if (name == null || name.isBlank() || unit == null || unit.isBlank() || !Double.isFinite(unitPrice)
+				|| unitPrice <= 0) {
+			return;
+		}
+		PRICE_DB.put(normalize(name), new IngredientPrice(true, name, unit, round(unitPrice), category,
+				List.of(), "农业农村部全国农产品批发价格日报", priceDate == null ? null : priceDate.toString()));
 	}
 
 	private final ObjectMapper objectMapper;

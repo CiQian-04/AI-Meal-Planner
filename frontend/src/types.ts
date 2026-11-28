@@ -57,6 +57,7 @@ export interface PlanRequest {
   servings: number
   preferences: string[]
   excludedIngredients: string[]
+  staplePreference: 'ANY' | 'RICE' | 'NOODLES'
 }
 
 export interface PlanResponse {

@@ -109,25 +109,34 @@ async function copyToClipboard() {
 </script>
 
 <template>
-  <header class="hero">
-    <div class="container">
-      <h1>AI 菜谱规划师</h1>
-      <p>输入天数、忌口和预算，AI 会自己查询食材价格，生成可执行的家庭菜单和购物清单。</p>
-      <div class="hero-tags">
-        <span class="hero-tag">Spring AI Function Calling</span>
-        <span class="hero-tag">结构化 JSON 输出</span>
-        <span class="hero-tag">Vue 3 + Vite</span>
-      </div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#top" aria-label="好好吃饭，回到首页">
+        <span class="brand-mark" aria-hidden="true">食</span>
+        <span>好好吃饭<small>MEAL PLANNER</small></span>
+      </a>
+      <a class="preferences-link" href="#planner">饮食偏好与预算 <span aria-hidden="true">↗</span></a>
     </div>
   </header>
 
-  <main class="container">
-    <div v-if="error" class="alert alert-error">{{ error }}</div>
+  <main id="top" class="container page-content">
+    <section class="welcome">
+      <div>
+        <p class="eyebrow">A LITTLE MORE DELICIOUS, EVERY DAY</p>
+        <h1>把一日三餐，安排得刚刚好。</h1>
+        <p class="welcome-copy">告诉我们你的口味、预算和用餐人数，轻松规划一周菜单与采购清单。</p>
+      </div>
+      <div class="welcome-note" aria-hidden="true"><span>本周</span><strong>吃得<br>有计划</strong><i>✳</i></div>
+    </section>
 
-    <PlanForm :loading="loading" @submit="onSubmit" />
+    <div v-if="error" class="alert alert-error" role="alert">{{ error }}</div>
+
+    <section id="planner" class="planner-section">
+      <PlanForm :loading="loading" @submit="onSubmit" />
+    </section>
 
     <template v-if="plan">
-      <section class="panel">
+      <section class="panel results-overview">
         <h2 class="panel-title">
           菜单总览
           <span class="badge">{{ plan.days.length }} 天 · {{ plan.summary }}</span>
@@ -173,7 +182,7 @@ async function copyToClipboard() {
         </ul>
       </section>
 
-      <section class="panel">
+      <section class="panel recipes-section">
         <h2 class="panel-title">
           菜谱安排
           <span class="badge">共 {{ plan.days.length }} 天</span>
@@ -189,7 +198,7 @@ async function copyToClipboard() {
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel shopping-section">
         <h2 class="panel-title">
           购物清单
           <span class="badge">{{ response?.shoppingList.length ?? 0 }} 项</span>
@@ -230,14 +239,13 @@ async function copyToClipboard() {
       </section>
     </template>
 
-    <div v-else-if="!loading" class="panel empty">
+      <div v-else-if="!loading" class="panel empty">
       <div class="empty-icon">🍜</div>
       <div>填写上方条件，点击「生成菜谱」开始规划</div>
     </div>
 
     <footer class="footer">
-      <a href="/swagger-ui.html">后端 API 文档</a> ·
-      <a href="https://github.com/spring-projects/spring-ai" target="_blank" rel="noreferrer">Spring AI</a>
+      <a href="/swagger-ui.html">服务说明</a> · 好好吃饭，从认真计划开始
     </footer>
   </main>
 </template>

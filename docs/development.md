@@ -40,7 +40,11 @@ mvn spring-boot:run       # 本地启动
 
 ### 添加新的食材价格 {#ingredient-prices}
 
-价格库在 `IngredientPriceTools` 的静态初始化块里：
+未被官方日报覆盖的食材仍使用 `IngredientPriceTools` 静态初始化块中的项目示例价。应用启动时及每日北京时间 15:30 会读取农业农村部市场与信息化司公开的批发价格日报，更新日报中明确公布的单品价格。抓取失败时保留已有价格；公开日报没有给出单个蔬菜/水果报价时，不会用大类均价或涨跌幅伪造单品价格。官方价格以 `500g` 为计价单位，来源和发布日期会随单品价格接口一并返回。
+
+每日同步可通过 `mealplanner.prices.moa-sync.enabled=false` 关闭。数据来源：<https://scs.moa.gov.cn/jcyj/>。
+
+示例价维护位置：
 
 ```java
 static {

@@ -381,6 +381,12 @@ public class MealPlanService {
 		sb.append("- 每天 ").append(request.mealsPerDayOrDefault()).append(" 道菜\n");
 		sb.append("- 用餐人数：").append(request.servingsOrDefault()).append(" 人\n");
 		sb.append("- 忌口：").append(request.avoidSpicyOrDefault() ? "不吃辣" : "无限制").append("\n");
+		String staple = request.staplePreference() == null ? "ANY" : request.staplePreference();
+		switch (staple) {
+			case "RICE" -> sb.append("- 主食偏好：米饭类主食为主（米饭、炒饭、粥等），不要安排面食类主食。\n");
+			case "NOODLES" -> sb.append("- 主食偏好：面食类主食为主（面条、馒头、饺子、包子等），不要安排米饭类主食。\n");
+			default -> sb.append("- 主食偏好：不限，主食可在米饭类与面食类之间搭配。\n");
+		}
 
 		List<String> preferences = request.preferencesOrEmpty();
 		if (!preferences.isEmpty()) {

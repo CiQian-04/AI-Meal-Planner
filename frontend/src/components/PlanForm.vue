@@ -10,11 +10,12 @@ const emit = defineEmits<{
   (e: 'submit', request: PlanRequest): void
 }>()
 
-const days = ref(3)
+const days = ref(7)
 const avoidSpicy = ref(true)
 const budget = ref(100)
 const mealsPerDay = ref(3)
 const servings = ref(2)
+const staplePreference = ref<PlanRequest['staplePreference']>('ANY')
 const preferenceInput = ref('')
 const preferences = ref<string[]>([])
 const excludedInput = ref('')
@@ -53,15 +54,20 @@ function submit() {
     servings: servings.value,
     preferences: [...preferences.value],
     excludedIngredients: [...excluded.value],
+    staplePreference: staplePreference.value,
   })
 }
 </script>
 
 <template>
-  <form class="panel" @submit.prevent="submit">
-    <h2 class="panel-title">规划条件</h2>
+  <form class="panel plan-form" @submit.prevent="submit">
+    <div class="form-heading">
+      <div><p class="eyebrow">YOUR TABLE, YOUR WAY</p><h2 class="panel-title">先定下这周怎么吃</h2></div>
+      <span class="step-mark">01 <i>/ 02</i></span>
+    </div>
 
-    <div class="form-grid">
+    <div class="form-section-label"><span>01</span><div><strong>用餐计划</strong><small>安排好份量与预算</small></div></div>
+    <div class="form-grid meal-fields">
       <div class="field">
         <label for="days">天数</label>
         <input id="days" v-model.number="days" type="number" min="1" max="14" />
@@ -80,6 +86,8 @@ function submit() {
       </div>
     </div>
 
+    <div class="preference-section">
+    <div class="form-section-label"><span>02</span><div><strong>饮食偏好</strong><small>让每一道菜都更合心意</small></div></div>
     <div class="switch-row">
       <label class="switch">
         <input v-model="avoidSpicy" type="checkbox" />
@@ -88,7 +96,17 @@ function submit() {
       <span>不吃辣</span>
     </div>
 
-    <div class="form-grid" style="margin-top: 18px">
+    <fieldset class="staple-field">
+      <legend>主食种类</legend>
+      <div class="staple-options" role="group" aria-label="选择主食偏好">
+        <button type="button" :aria-pressed="staplePreference === 'ANY'" @click="staplePreference = 'ANY'">不限</button>
+        <button type="button" :aria-pressed="staplePreference === 'RICE'" @click="staplePreference = 'RICE'">米饭类</button>
+        <button type="button" :aria-pressed="staplePreference === 'NOODLES'" @click="staplePreference = 'NOODLES'">面食类</button>
+      </div>
+      <small>选择后会优先安排对应主食，并避开另一类。</small>
+    </fieldset>
+
+    <div class="form-grid preference-fields">
       <div class="field">
         <label for="preference">口味偏好</label>
         <div class="chip-input">
@@ -124,18 +142,18 @@ function submit() {
           </span>
         </div>
       </div>
-    </div>
+    </div></div>
 
     <div class="actions">
       <button type="submit" class="btn btn-primary" :disabled="props.loading">
         <span v-if="props.loading" class="spinner"></span>
-        {{ props.loading ? 'AI 规划中…' : '生成菜谱' }}
+        {{ props.loading ? '正在安排菜单…' : `生成${days} 天菜谱` }}
       </button>
       <button
         type="button"
         class="btn btn-ghost"
         :disabled="props.loading"
-        @click="days = 3; avoidSpicy = true; budget = 100; mealsPerDay = 3; servings = 2; preferences = []; excluded = []"
+        @click="days = 7; avoidSpicy = true; budget = 100; mealsPerDay = 3; servings = 2; staplePreference = 'ANY'; preferences = []; excluded = []"
       >
         重置
       </button>

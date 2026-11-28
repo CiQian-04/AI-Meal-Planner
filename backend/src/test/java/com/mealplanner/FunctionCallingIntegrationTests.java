@@ -76,6 +76,7 @@ class FunctionCallingIntegrationTests {
 		registry.add("spring.ai.openai.base-url", () -> stub.baseUrl());
 		registry.add("spring.ai.openai.api-key", () -> "mock");
 		registry.add("spring.ai.openai.chat.options.model", () -> "stub-model");
+		registry.add("mealplanner.prices.moa-sync.enabled", () -> false);
 	}
 
 	@Test
