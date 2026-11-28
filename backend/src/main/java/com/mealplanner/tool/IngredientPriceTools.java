@@ -2,6 +2,8 @@ package com.mealplanner.tool;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mealplanner.model.IngredientPrice;
+import com.mealplanner.unit.UnitConverter;
+import com.mealplanner.unit.UnitConverter.UnitSpec;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -384,67 +386,63 @@ public class IngredientPriceTools {
 	 * @return the pack size, or 0 when unparseable
 	 */
 	public static double parsePriceQuantity(String priceUnit) {
-		if (priceUnit == null || priceUnit.isBlank()) {
-			return 0.0;
-		}
-		String trimmed = priceUnit.trim();
-		StringBuilder digits = new StringBuilder();
-		for (int index = 0; index < trimmed.length(); index++) {
-			char ch = trimmed.charAt(index);
-			if (Character.isDigit(ch) || ch == '.') {
-				digits.append(ch);
-			}
-			else {
-				break;
-			}
-		}
-		return parseQuantity(digits.toString());
+		UnitSpec spec = UnitConverter.parse(priceUnit);
+		return spec.composite() ? spec.compositeSize() : 0.0;
 	}
 
 	/**
 	 * Reads the unit out of a price entry such as {@code "500g"}.
 	 */
 	public static String parsePriceUnitName(String priceUnit) {
-		if (priceUnit == null || priceUnit.isBlank()) {
-			return "";
-		}
-		String trimmed = priceUnit.trim();
-		int index = 0;
-		while (index < trimmed.length() && (Character.isDigit(trimmed.charAt(index)) || trimmed.charAt(index) == '.')) {
-			index++;
-		}
-		return trimmed.substring(index).trim();
+		UnitSpec spec = UnitConverter.parse(priceUnit);
+		return spec.isKnown() ? spec.baseUnit() : "";
 	}
 
 	/**
-	 * Convert an amount into a comparable base unit (grams for weight, millilitres for volume).
+	 * Convert an amount into a comparable base unit (grams for weight, millilitres for volume,
+	 * items for countable ingredients).
 	 *
 	 * <p>Public so the shopping list pricing in {@code IngredientPriceService} uses exactly the
 	 * same conversion rules as the tool exposed to the model.
+	 *
+	 * <p>Composite units such as {@code "500g"} are read as a multiple of that pack, which is the
+	 * convention the price tool itself uses and therefore the convention the model copies into its
+	 * answer: {@code 1.0} of {@code "500g"} is one pack of 500 g.
 	 */
 	public static double toBaseUnits(double quantity, String unit) {
-		String u = unit == null ? "" : unit.trim().toLowerCase(Locale.ROOT);
-		return switch (u) {
-			case "kg", "千克", "公斤" -> quantity * 1000;
-			case "g", "克" -> quantity;
-			case "l", "升" -> quantity * 1000;
-			case "ml", "毫升" -> quantity;
-			default -> quantity;
-		};
+		return UnitConverter.toBaseUnits(quantity, unit);
 	}
 
 	/**
 	 * Cost of buying {@code quantity} of {@code unit}, given a price entry, in CNY.
 	 *
-	 * <p>Shared by the tool and the shopping list service so both sides always agree.
+	 * <p>Shared by the tool and the shopping list service so both sides always agree. Amounts that
+	 * cannot be compared with the pack - a piece of tomato against a pack measured in grams, for
+	 * instance - cost nothing instead of producing a plausible looking but wrong number.
 	 */
 	public static double costFromPrice(IngredientPrice price, double quantity, String unit) {
+		UnitSpec requested = UnitConverter.parse(unit);
+		UnitSpec pack = UnitConverter.parse(price.unit());
+		if (!requested.isKnown() || !UnitConverter.sameFamily(requested, pack)) {
+			return 0.0;
+		}
 		double base = toBaseUnits(quantity, unit);
-		double packSize = toBaseUnits(parsePriceQuantity(price.unit()), parsePriceUnitName(price.unit()));
+		double packSize = pack.baseSize();
 		if (packSize <= 0) {
 			return 0.0;
 		}
 		return round(base / packSize * price.unitPrice());
+	}
+
+	/**
+	 * Look up an ingredient without going through the JSON round trip.
+	 *
+	 * <p>Used by the server side pricing code, which needs the price many times per request.
+	 *
+	 * @return the price entry, or {@code null} when the ingredient is unknown
+	 */
+	public IngredientPrice lookup(String name) {
+		return PRICE_DB.get(normalize(name));
 	}
 
 	/** Parse a numeric string, returning 0 when it is not a number. */

@@ -9,12 +9,14 @@ import java.util.List;
  * @param shoppingList merged shopping list ready for export
  * @param toolCalls the function calls the model actually made, for transparency
  * @param requestEcho the normalized request that produced this plan
+ * @param shoppingPackCost what the shopping trip costs when everything is bought in whole packs
  */
 public record PlanResponse(
 		MealPlan plan,
 		List<ShoppingItem> shoppingList,
 		List<ToolInvocation> toolCalls,
-		PlanRequest requestEcho) {
+		PlanRequest requestEcho,
+		double shoppingPackCost) {
 
 	/**
 	 * A single function call made by the model.

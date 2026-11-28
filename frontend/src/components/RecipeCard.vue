@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Recipe } from '@/types'
+import { formatQuantity } from '@/utils/format'
 
 defineProps<{
   recipe: Recipe
@@ -22,7 +23,7 @@ defineProps<{
 
     <ul v-if="recipe.ingredients?.length" class="ingredients">
       <li v-for="(ing, index) in recipe.ingredients" :key="`${ing.name}-${index}`">
-        {{ ing.name }} {{ ing.quantity }}{{ ing.unit }}
+        {{ ing.name }} {{ formatQuantity(ing.quantity, ing.unit) }}
       </li>
     </ul>
 

@@ -97,9 +97,14 @@ curl -X POST http://localhost:8080/api/v1/plans \
     "servings": 2,
     "preferences": ["清淡"],
     "excludedIngredients": []
-  }
+  },
+  "shoppingPackCost": 78.9
 }
 ```
+
+!!! note "`shoppingPackCost` 的作用"
+    `plan.estimatedShoppingCost` 是**按实际用量**折算的精确成本；`shoppingPackCost` 是**按整包购买**的成本
+    （超市只卖整袋整瓶，这个数才是真正要掏的钱）。两个数都由后端算出，tips 末尾也会附上同样口径的说明。
 
 !!! note "`toolCalls` 的作用"
     这个字段记录了模型实际发起过的函数调用，是验证 Function Calling 是否生效的直接证据。

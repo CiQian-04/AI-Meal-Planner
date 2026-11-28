@@ -15,9 +15,16 @@ mkdir -p "$OUT"
 # Python runs on Windows and needs the native path, not the Git Bash one.
 if command -v cygpath > /dev/null 2>&1; then
   WIN_OUT="$(cygpath -w "$OUT")"
+  STYLE_FILE="$(cygpath -w "$OUT/style.txt")"
 else
   WIN_OUT="$OUT"
+  STYLE_FILE="$OUT/style.txt"
 fi
+
+# A fixed seed keeps the mock deterministic, so the same dishes are served for every request and
+# the cost of the different notations can be compared against each other.
+export MOCK_SEED="${MOCK_SEED:-4}"
+echo plain > "$OUT/style.txt"
 
 # On this Windows host the JDK and Maven live outside PATH. On CI both are already set up,
 # so only prepend them when they actually exist.
@@ -45,7 +52,7 @@ check() {
 }
 
 step "启动 mock OpenAI server (:$MOCK_PORT)"
-python -u "$ROOT/tools/mock_openai_server.py" --port "$MOCK_PORT" > "$OUT/mock.log" 2>&1 &
+MOCK_STYLE_FILE="$STYLE_FILE" python -u "$ROOT/tools/mock_openai_server.py" --port "$MOCK_PORT" > "$OUT/mock.log" 2>&1 &
 MOCK_PID=$!
 for _ in $(seq 1 40); do
   curl -fsS "http://127.0.0.1:$MOCK_PORT/v1/models" > /dev/null 2>&1 && break
@@ -128,6 +135,32 @@ else
   grep -iE "Exception|Caused by" "$OUT/backend.log" | head -10
   check 1 "规划接口调用"
 fi
+
+step "同一份菜谱换三种计量写法，采购成本必须一致"
+# The mock writes the very same amounts in three notations: plain grams, "a fraction of the
+# 500 g pack" and "kilograms wearing a gram label". The backend has to normalise all of them,
+# otherwise the price estimate is off by a factor of 500 or 1000.
+plan_cost() {
+  python -c "import json,sys;print(json.load(open(sys.argv[1],encoding='utf-8'))['plan']['estimatedShoppingCost'])" "$1" 2>/dev/null || echo "0"
+}
+plain_cost=$(plan_cost "$WIN_OUT/plan.json")
+echo pack > "$OUT/style.txt"
+curl -s --max-time 120 -o "$OUT/plan-pack.json" -X POST "http://127.0.0.1:$BACKEND_PORT/api/v1/plans" \
+  -H 'Content-Type: application/json' \
+  -d '{"days":3,"avoidSpicy":true,"budget":100,"mealsPerDay":3,"servings":2,"preferences":["清淡"],"excludedIngredients":[]}' > /dev/null
+pack_cost=$(plan_cost "$WIN_OUT/plan-pack.json")
+echo kg > "$OUT/style.txt"
+curl -s --max-time 120 -o "$OUT/plan-kg.json" -X POST "http://127.0.0.1:$BACKEND_PORT/api/v1/plans" \
+  -H 'Content-Type: application/json' \
+  -d '{"days":3,"avoidSpicy":true,"budget":100,"mealsPerDay":3,"servings":2,"preferences":["清淡"],"excludedIngredients":[]}' > /dev/null
+kg_cost=$(plan_cost "$WIN_OUT/plan-kg.json")
+echo plain > "$OUT/style.txt"
+echo "  绝对用量 ¥$plain_cost / 包装规格 ¥$pack_cost / 千克数值 ¥$kg_cost"
+same=$(python -c "
+import sys
+values = [float(v) for v in sys.argv[1:4]]
+print(0 if max(values) - min(values) <= 0.05 else 1)" "$plain_cost" "$pack_cost" "$kg_cost")
+check "$same" "三种计量写法算出的采购成本一致"
 
 step "GET /api/v1/prices/catalog"
 code=$(curl -s --max-time 20 -o "$OUT/catalog.json" -w '%{http_code}' "http://127.0.0.1:$BACKEND_PORT/api/v1/prices/catalog")

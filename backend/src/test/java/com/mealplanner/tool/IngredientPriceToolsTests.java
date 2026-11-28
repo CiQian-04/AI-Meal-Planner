@@ -71,6 +71,27 @@ class IngredientPriceToolsTests {
 	}
 
 	@Test
+	@DisplayName("按包装规格计价：1 份 500g 的鲈鱼就是 28 元")
+	void estimateDishCostHandlesPackSizedUnits() throws Exception {
+		// 鲈鱼 28.00/500g；模型回显包装规格时数量是"几份"
+		JsonNode result = objectMapper.readTree(tools.estimateDishCost("鲈鱼:1:500g,鸡蛋:0.4:10个"));
+
+		assertThat(result.get("total").asDouble()).isEqualTo(31.40);
+		assertThat(result.get("items").get(0).get("estimatedCost").asDouble()).isEqualTo(28.00);
+		assertThat(result.get("items").get(1).get("estimatedCost").asDouble()).isEqualTo(3.40);
+	}
+
+	@Test
+	@DisplayName("数量单位与包装单位不匹配时不再算出错误的小数字")
+	void estimateDishCostIgnoresMismatchedUnits() throws Exception {
+		// 番茄按 500g 计价，用"个"来买无法换算，宁可报 0 也不要报一个看似合理的价格
+		JsonNode result = objectMapper.readTree(tools.estimateDishCost("番茄:2:个"));
+
+		assertThat(result.get("total").asDouble()).isZero();
+		assertThat(result.get("items").get(0).get("estimatedCost").asDouble()).isZero();
+	}
+
+	@Test
 	@DisplayName("空输入不会抛异常")
 	void estimateDishCostHandlesEmptyInput() throws Exception {
 		JsonNode result = objectMapper.readTree(tools.estimateDishCost(""));

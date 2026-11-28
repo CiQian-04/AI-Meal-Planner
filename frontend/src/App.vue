@@ -4,6 +4,7 @@ import PlanForm from '@/components/PlanForm.vue'
 import RecipeCard from '@/components/RecipeCard.vue'
 import ShoppingList from '@/components/ShoppingList.vue'
 import { createPlan } from '@/api/client'
+import { formatQuantity } from '@/utils/format'
 import type { PlanRequest, PlanResponse } from '@/types'
 
 const loading = ref(false)
@@ -14,6 +15,7 @@ const exportNotice = ref('')
 
 const plan = computed(() => response.value?.plan ?? null)
 const budget = computed(() => response.value?.requestEcho?.budget ?? 0)
+const packCost = computed(() => response.value?.shoppingPackCost ?? 0)
 const overBudget = computed(() => {
   if (!plan.value || !budget.value) return false
   return plan.value.estimatedShoppingCost > budget.value
@@ -66,7 +68,7 @@ function buildExportText(): string {
     for (const meal of day.meals) {
       lines.push(`  ${meal.name}（${meal.cookingMinutes} 分钟 / ${meal.servings} 人份）`)
       for (const ing of meal.ingredients) {
-        lines.push(`    - ${ing.name} ${ing.quantity}${ing.unit}`)
+        lines.push(`    - ${ing.name} ${formatQuantity(ing.quantity, ing.unit)}`)
       }
     }
     lines.push('')
@@ -75,10 +77,10 @@ function buildExportText(): string {
   lines.push('【采购清单】')
   for (const item of current.shoppingList) {
     const mark = checkedItems.value.has(item.name) ? '[x]' : '[ ]'
-    lines.push(`${mark} ${item.name} ${item.quantity}${item.unit}  ¥${item.estimatedCost.toFixed(2)}`)
+    lines.push(`${mark} ${item.name} ${formatQuantity(item.quantity, item.unit)}  ¥${item.estimatedCost.toFixed(2)}`)
   }
   lines.push('')
-  lines.push(`合计：¥${current.plan.estimatedShoppingCost.toFixed(2)} / 预算 ¥${current.requestEcho.budget}`)
+  lines.push(`合计：¥${current.plan.estimatedShoppingCost.toFixed(2)}（整包购买 ¥${current.shoppingPackCost.toFixed(2)}）/ 预算 ¥${current.requestEcho.budget}`)
   return lines.join('\n')
 }
 
@@ -140,6 +142,10 @@ async function copyToClipboard() {
             <div class="stat-value" :class="overBudget ? 'over' : 'ok'">
               ¥{{ plan.estimatedShoppingCost.toFixed(2) }}
             </div>
+          </div>
+          <div class="stat">
+            <div class="stat-label" title="超市按整包售卖时的实际支出">整包采购</div>
+            <div class="stat-value">¥{{ packCost.toFixed(2) }}</div>
           </div>
           <div class="stat">
             <div class="stat-label">菜品总数</div>

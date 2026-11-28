@@ -241,17 +241,52 @@ MealPlan
 | `g` / `克` | g | ×1 |
 | `l` / `升` | ml | ×1000 |
 | `ml` / `毫升` | ml | ×1 |
-| 其他（`个`、`把`…） | 原样 | ×1 |
+| 其他（`个`、`把`…） | 个 | ×1 |
+
+单位解析集中在 `com.mealplanner.unit.UnitConverter`，`IngredientPriceTools` 和
+`IngredientPriceService` 共用同一套换算，工具返回值与购物清单金额不会漂移。
+
+### 模型的三种计量写法 {#unit-normalization}
+
+模型并不总是按同一套约定写用量，同一轮对话里甚至会混着来：
+
+| 写法 | 例子 | 含义 |
+| --- | --- | --- |
+| 绝对用量 | `300 g` | 300 克，本来就对 |
+| 回显包装规格 | `1.0 × "500g"` | 一包 500 克（工具刚返回的 `unit` 被它抄了过去） |
+| 千克数值配克单位 | `1.25 g` | 1.25 千克 |
+
+后两种如果直接拿去算钱，结果会差 100 到 500 倍——10 天 30 道菜算出来只有 ¥4.36 就是这么来的。
+`QuantityNormalizer` 在合并和定价之前把每一行折算成**绝对用量 + 基准单位**：
+
+1. 包装规格按「几份」理解，`1.0 × "500g"` → 500 g；只有当这个读法明显离谱（比如 300 份）时才退回绝对读法。
+2. 千克数值用价格库的包装规格当尺子判断：原值相对一包小得离谱（主料 < 5%、调料 < 0.2%），
+   且放大 1000 倍后落回合理区间，才判定是单位写错。
+3. 判定需要佐证：同一道菜里有两处以上可疑就整体放大；只有一处时，主料可以直接判定，
+   调料则要求小到 50 毫克以下（那一定不是人写的用量）。
+
+同一份菜谱换成三种写法，后端算出来的采购成本必须一致——这条断言写进了 `scripts/verify.sh`，
+CI 每次都会跑。
 
 ```java
-double base = toBaseUnits(quantity, unit);                       // 300g -> 300
-double packSize = toBaseUnits(parsePriceQuantity(price.unit()),   // "500g" -> 500
-        parsePriceUnitName(price.unit()));
-double cost = base / packSize * price.unitPrice();               // 300/500 * 9.90 = 5.94
+double base = UnitConverter.toBaseUnits(quantity, unit);   // "500g" × 1.0 -> 500
+double packSize = UnitConverter.parse(price.unit()).baseSize();
+double cost = base / packSize * price.unitPrice();        // 500/500 * 28.00 = 28.00
 ```
 
-同一套换算逻辑由 `IngredientPriceTools` 和 `IngredientPriceService` 共享，
-工具返回值与购物清单金额不会漂移。
+单位族对不上时（比如按 500g 计价却用「个」来买）宁可报 0，也不给一个看着合理但错的数。
+
+### 两个金额口径 {#two-costs}
+
+- `plan.estimatedShoppingCost`：**按实际用量**折算的精确成本，也就是清单上每行 `estimatedCost` 的合计；
+- `shoppingPackCost`：**按整包购买**的成本，超市只卖整袋整瓶，这个数才是真正要掏的钱。
+
+两个数都会给到前端，tips 末尾也会由后端补一条权威说明：
+
+> 本次采购：按实际用量约需 ¥148.62，按超市整包购买约需 ¥277.50。
+
+模型自己写的金额一律以这两个后端算出来的数为准（`rewriteCostFigures`），
+但**预算数字不动**——模型复述预算没问题，自造一个成本才有问题。
 
 ## 前端设计
 

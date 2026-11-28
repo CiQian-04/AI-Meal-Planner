@@ -403,7 +403,7 @@ RECIPE_TEMPLATES = [
         "description": "12 分钟家常菜，步骤清晰易操作",
         "category": "side",
         "cookingMinutes": 12,
-        "ingredients": [("西葫芦", 300, "g"), ("大蒜", 15, "g"), ("盐", 3, "g"), ("菜籽油", 10, "g")],
+        "ingredients": [("西葫芦", 300, "g"), ("大蒜", 15, "g"), ("盐", 3, "g"), ("菜籽油", 10, "ml")],
         "steps": ["西葫芦切片", "蒜末爆香", "下锅翻炒", "加盐出锅"],
     },
     {
@@ -411,7 +411,7 @@ RECIPE_TEMPLATES = [
         "description": "10 分钟家常菜，步骤清晰易操作",
         "category": "side",
         "cookingMinutes": 10,
-        "ingredients": [("西红柿", 250, "g"), ("鸡蛋", 3, "个"), ("白糖", 3, "g"), ("盐", 3, "g"), ("菜籽油", 15, "g")],
+        "ingredients": [("西红柿", 250, "g"), ("鸡蛋", 3, "个"), ("白糖", 3, "g"), ("盐", 3, "g"), ("菜籽油", 15, "ml")],
         "steps": ["西红柿切块", "鸡蛋炒熟盛出", "番茄炒出汁", "回锅调味出锅"],
     },
     {
@@ -419,7 +419,7 @@ RECIPE_TEMPLATES = [
         "description": "8 分钟家常菜，步骤清晰易操作",
         "category": "side",
         "cookingMinutes": 8,
-        "ingredients": [("上海青", 400, "g"), ("大蒜", 10, "g"), ("盐", 3, "g"), ("菜籽油", 10, "g")],
+        "ingredients": [("上海青", 400, "g"), ("大蒜", 10, "g"), ("盐", 3, "g"), ("菜籽油", 10, "ml")],
         "steps": ["青菜洗净沥干", "蒜末爆香", "大火快炒", "加盐出锅"],
     },
     {
@@ -427,7 +427,7 @@ RECIPE_TEMPLATES = [
         "description": "12 分钟家常菜，步骤清晰易操作",
         "category": "side",
         "cookingMinutes": 12,
-        "ingredients": [("土豆", 300, "g"), ("干辣椒", 3, "g"), ("米醋", 8, "ml"), ("盐", 3, "g"), ("菜籽油", 12, "g")],
+        "ingredients": [("土豆", 300, "g"), ("干辣椒", 3, "g"), ("米醋", 8, "ml"), ("盐", 3, "g"), ("菜籽油", 12, "ml")],
         "steps": ["土豆切丝泡水", "干辣椒爆香", "下锅大火翻炒", "沿锅边加醋", "加盐出锅"],
     },
     {
@@ -435,7 +435,7 @@ RECIPE_TEMPLATES = [
         "description": "25 分钟家常菜，步骤清晰易操作",
         "category": "side",
         "cookingMinutes": 25,
-        "ingredients": [("土豆", 200, "g"), ("茄子", 200, "g"), ("青椒", 80, "g"), ("生抽", 10, "ml"), ("盐", 3, "g"), ("菜籽油", 25, "g")],
+        "ingredients": [("土豆", 200, "g"), ("茄子", 200, "g"), ("青椒", 80, "g"), ("生抽", 10, "ml"), ("盐", 3, "g"), ("菜籽油", 25, "ml")],
         "steps": ["土豆茄子切块", "茄子拍粉过油", "土豆煎熟", "青椒炒香", "同锅加生抽调味"],
     },
     {
@@ -443,7 +443,7 @@ RECIPE_TEMPLATES = [
         "description": "12 分钟家常菜，步骤清晰易操作",
         "category": "side",
         "cookingMinutes": 12,
-        "ingredients": [("西兰花", 350, "g"), ("大蒜", 15, "g"), ("盐", 3, "g"), ("橄榄油", 8, "g")],
+        "ingredients": [("西兰花", 350, "g"), ("大蒜", 15, "g"), ("盐", 3, "g"), ("橄榄油", 8, "ml")],
         "steps": ["西兰花焯水", "蒜末炒香", "下锅翻匀", "加盐出锅"],
     },
     {
@@ -451,7 +451,7 @@ RECIPE_TEMPLATES = [
         "description": "8 分钟家常菜，步骤清晰易操作",
         "category": "side",
         "cookingMinutes": 8,
-        "ingredients": [("生菜", 400, "g"), ("蚝油", 15, "g"), ("大蒜", 10, "g"), ("菜籽油", 10, "g")],
+        "ingredients": [("生菜", 400, "g"), ("蚝油", 15, "g"), ("大蒜", 10, "g"), ("菜籽油", 10, "ml")],
         "steps": ["生菜焯水摆盘", "蒜末爆香", "加蚝油与少量水煮开", "淋汁"],
     },
     {
@@ -459,7 +459,7 @@ RECIPE_TEMPLATES = [
         "description": "15 分钟家常菜，步骤清晰易操作",
         "category": "main",
         "cookingMinutes": 15,
-        "ingredients": [("芦笋", 200, "g"), ("虾仁", 150, "g"), ("大蒜", 8, "g"), ("盐", 3, "g"), ("橄榄油", 10, "g")],
+        "ingredients": [("芦笋", 200, "g"), ("虾仁", 150, "g"), ("大蒜", 8, "g"), ("盐", 3, "g"), ("橄榄油", 10, "ml")],
         "steps": ["芦笋切段焯水", "虾仁煎熟", "蒜末爆香", "合炒调味出锅"],
     },
     {
@@ -467,7 +467,7 @@ RECIPE_TEMPLATES = [
         "description": "18 分钟家常菜，步骤清晰易操作",
         "category": "main",
         "cookingMinutes": 18,
-        "ingredients": [("鸡胸肉", 250, "g"), ("黑胡椒粉", 3, "g"), ("盐", 3, "g"), ("橄榄油", 10, "g")],
+        "ingredients": [("鸡胸肉", 250, "g"), ("黑胡椒粉", 3, "g"), ("盐", 3, "g"), ("橄榄油", 10, "ml")],
         "steps": ["鸡胸肉拍平腌制", "热锅少油", "中小火每面煎4分钟", "醒肉切片"],
     },
     {
@@ -475,7 +475,7 @@ RECIPE_TEMPLATES = [
         "description": "18 分钟家常菜，步骤清晰易操作",
         "category": "main",
         "cookingMinutes": 18,
-        "ingredients": [("牛肉里脊", 200, "g"), ("彩椒", 100, "g"), ("洋葱", 80, "g"), ("黑胡椒粉", 4, "g"), ("生抽", 10, "ml"), ("菜籽油", 15, "g")],
+        "ingredients": [("牛肉里脊", 200, "g"), ("彩椒", 100, "g"), ("洋葱", 80, "g"), ("黑胡椒粉", 4, "g"), ("生抽", 10, "ml"), ("菜籽油", 15, "ml")],
         "steps": ["牛肉切条腌10分钟", "彩椒洋葱切块", "大火滑炒牛肉", "下配菜加黑椒生抽出锅"],
     },
     {
@@ -507,7 +507,7 @@ RECIPE_TEMPLATES = [
         "description": "18 分钟家常菜，步骤清晰易操作",
         "category": "main",
         "cookingMinutes": 18,
-        "ingredients": [("虾仁", 200, "g"), ("粉丝", 50, "g"), ("大蒜", 25, "g"), ("生抽", 12, "ml"), ("菜籽油", 15, "g")],
+        "ingredients": [("虾仁", 200, "g"), ("粉丝", 50, "g"), ("大蒜", 25, "g"), ("生抽", 12, "ml"), ("菜籽油", 15, "ml")],
         "steps": ["粉丝泡软垫底", "蒜蓉一半炸香", "虾仁摆面", "淋生抽蒜蓉", "上汽蒸8分钟"],
     },
     {
@@ -515,7 +515,7 @@ RECIPE_TEMPLATES = [
         "description": "15 分钟家常菜，步骤清晰易操作",
         "category": "main",
         "cookingMinutes": 15,
-        "ingredients": [("龙利鱼柳", 300, "g"), ("姜", 10, "g"), ("大葱", 20, "g"), ("蒸鱼豉油", 15, "ml"), ("菜籽油", 15, "g")],
+        "ingredients": [("龙利鱼柳", 300, "g"), ("姜", 10, "g"), ("大葱", 20, "g"), ("蒸鱼豉油", 15, "ml"), ("菜籽油", 15, "ml")],
         "steps": ["鱼柳改花刀", "姜葱垫底", "上汽蒸8分钟", "倒腥水淋豉油", "浇热油"],
     },
     {
@@ -523,7 +523,7 @@ RECIPE_TEMPLATES = [
         "description": "12 分钟家常菜，步骤清晰易操作",
         "category": "main",
         "cookingMinutes": 12,
-        "ingredients": [("三文鱼", 200, "g"), ("黑胡椒粉", 3, "g"), ("盐", 2, "g"), ("柠檬", 20, "g"), ("橄榄油", 8, "g")],
+        "ingredients": [("三文鱼", 200, "g"), ("黑胡椒粉", 3, "g"), ("盐", 2, "g"), ("柠檬", 20, "个"), ("橄榄油", 8, "ml")],
         "steps": ["三文鱼擦干调味", "热锅下油", "皮面先煎3分钟", "翻面2分钟", "挤柠檬汁"],
     },
     {
@@ -531,7 +531,7 @@ RECIPE_TEMPLATES = [
         "description": "10 分钟家常菜，步骤清晰易操作",
         "category": "main",
         "cookingMinutes": 10,
-        "ingredients": [("虾仁", 150, "g"), ("鸡蛋", 4, "个"), ("纯牛奶", 20, "ml"), ("盐", 3, "g"), ("菜籽油", 12, "g")],
+        "ingredients": [("虾仁", 150, "g"), ("鸡蛋", 4, "个"), ("纯牛奶", 20, "ml"), ("盐", 3, "g"), ("菜籽油", 12, "ml")],
         "steps": ["虾仁煎七成熟", "蛋液加牛奶盐", "回锅小火推炒", "凝固即出锅"],
     },
     {
@@ -603,7 +603,7 @@ RECIPE_TEMPLATES = [
         "description": "18 分钟家常菜，步骤清晰易操作",
         "category": "main",
         "cookingMinutes": 18,
-        "ingredients": [("嫩豆腐", 400, "g"), ("猪肉馅", 80, "g"), ("豆瓣酱", 20, "g"), ("花椒", 3, "g"), ("生抽", 8, "ml"), ("菜籽油", 18, "g")],
+        "ingredients": [("嫩豆腐", 400, "g"), ("猪肉馅", 80, "g"), ("豆瓣酱", 20, "g"), ("花椒", 3, "g"), ("生抽", 8, "ml"), ("菜籽油", 18, "ml")],
         "steps": ["豆腐焯水", "肉末炒散", "下豆瓣酱花椒出红油", "加少量水", "下豆腐轻推收汁"],
     },
     {
@@ -611,7 +611,7 @@ RECIPE_TEMPLATES = [
         "description": "20 分钟家常菜，步骤清晰易操作",
         "category": "main",
         "cookingMinutes": 20,
-        "ingredients": [("豆腐", 350, "g"), ("木耳干", 10, "g"), ("青椒", 60, "g"), ("生抽", 12, "ml"), ("蚝油", 8, "g"), ("菜籽油", 15, "g")],
+        "ingredients": [("豆腐", 350, "g"), ("木耳干", 10, "g"), ("青椒", 60, "g"), ("生抽", 12, "ml"), ("蚝油", 8, "g"), ("菜籽油", 15, "ml")],
         "steps": ["豆腐切块煎至金黄", "木耳青椒炒香", "下调料水", "回锅豆腐焖3分钟"],
     },
     {
@@ -619,7 +619,7 @@ RECIPE_TEMPLATES = [
         "description": "12 分钟家常菜，步骤清晰易操作",
         "category": "side",
         "cookingMinutes": 12,
-        "ingredients": [("香干", 200, "g"), ("芹菜", 200, "g"), ("生抽", 8, "ml"), ("盐", 2, "g"), ("菜籽油", 10, "g")],
+        "ingredients": [("香干", 200, "g"), ("芹菜", 200, "g"), ("生抽", 8, "ml"), ("盐", 2, "g"), ("菜籽油", 10, "ml")],
         "steps": ["香干切片", "芹菜切段焯水", "下锅同炒", "加生抽盐出锅"],
     },
     {
@@ -627,7 +627,7 @@ RECIPE_TEMPLATES = [
         "description": "18 分钟家常菜，步骤清晰易操作",
         "category": "main",
         "cookingMinutes": 18,
-        "ingredients": [("千张", 200, "g"), ("猪肉里脊", 120, "g"), ("青椒", 50, "g"), ("生抽", 10, "ml"), ("菜籽油", 12, "g")],
+        "ingredients": [("千张", 200, "g"), ("猪肉里脊", 120, "g"), ("青椒", 50, "g"), ("生抽", 10, "ml"), ("菜籽油", 12, "ml")],
         "steps": ["肉丝滑熟", "千张切丝焯水", "青椒炒香", "合炒加生抽出锅"],
     },
     {
@@ -635,7 +635,7 @@ RECIPE_TEMPLATES = [
         "description": "15 分钟家常菜，步骤清晰易操作",
         "category": "side",
         "cookingMinutes": 15,
-        "ingredients": [("腐竹", 80, "g"), ("木耳干", 15, "g"), ("鸡蛋", 3, "个"), ("生抽", 8, "ml"), ("盐", 2, "g"), ("菜籽油", 15, "g")],
+        "ingredients": [("腐竹", 80, "g"), ("木耳干", 15, "g"), ("鸡蛋", 3, "个"), ("生抽", 8, "ml"), ("盐", 2, "g"), ("菜籽油", 15, "ml")],
         "steps": ["腐竹木耳泡发焯水", "鸡蛋炒熟", "合炒", "调味出锅"],
     },
     {
@@ -643,7 +643,7 @@ RECIPE_TEMPLATES = [
         "description": "15 分钟家常菜，步骤清晰易操作",
         "category": "main",
         "cookingMinutes": 15,
-        "ingredients": [("猪肉里脊", 180, "g"), ("青椒", 150, "g"), ("生抽", 10, "ml"), ("料酒", 5, "ml"), ("盐", 2, "g"), ("菜籽油", 15, "g")],
+        "ingredients": [("猪肉里脊", 180, "g"), ("青椒", 150, "g"), ("生抽", 10, "ml"), ("料酒", 5, "ml"), ("盐", 2, "g"), ("菜籽油", 15, "ml")],
         "steps": ["肉丝腌10分钟", "滑熟盛出", "青椒炒断生", "回锅调味出锅"],
     },
     {
@@ -651,7 +651,7 @@ RECIPE_TEMPLATES = [
         "description": "16 分钟家常菜，步骤清晰易操作",
         "category": "main",
         "cookingMinutes": 16,
-        "ingredients": [("牛肉里脊", 200, "g"), ("洋葱", 200, "g"), ("黑胡椒粉", 3, "g"), ("生抽", 10, "ml"), ("菜籽油", 15, "g")],
+        "ingredients": [("牛肉里脊", 200, "g"), ("洋葱", 200, "g"), ("黑胡椒粉", 3, "g"), ("生抽", 10, "ml"), ("菜籽油", 15, "ml")],
         "steps": ["牛肉切片腌", "洋葱切丝", "大火炒牛肉", "下洋葱", "加黑椒生抽出锅"],
     },
     {
@@ -659,7 +659,7 @@ RECIPE_TEMPLATES = [
         "description": "18 分钟家常菜，步骤清晰易操作",
         "category": "main",
         "cookingMinutes": 18,
-        "ingredients": [("猪肝", 250, "g"), ("芹菜", 150, "g"), ("料酒", 10, "ml"), ("生抽", 8, "ml"), ("姜", 8, "g"), ("菜籽油", 18, "g")],
+        "ingredients": [("猪肝", 250, "g"), ("芹菜", 150, "g"), ("料酒", 10, "ml"), ("生抽", 8, "ml"), ("姜", 8, "g"), ("菜籽油", 18, "ml")],
         "steps": ["猪肝切片泡血水", "加料酒姜抓匀", "滑炒至变色", "下芹菜", "调味出锅"],
     },
     {
@@ -667,7 +667,7 @@ RECIPE_TEMPLATES = [
         "description": "20 分钟家常菜，步骤清晰易操作",
         "category": "side",
         "cookingMinutes": 20,
-        "ingredients": [("鸡胗", 300, "g"), ("干辣椒", 5, "g"), ("花椒", 2, "g"), ("料酒", 10, "ml"), ("盐", 3, "g"), ("菜籽油", 20, "g")],
+        "ingredients": [("鸡胗", 300, "g"), ("干辣椒", 5, "g"), ("花椒", 2, "g"), ("料酒", 10, "ml"), ("盐", 3, "g"), ("菜籽油", 20, "ml")],
         "steps": ["鸡胗焯水切花", "爆香干辣椒花椒", "大火爆炒", "加料酒盐出锅"],
     },
     {
@@ -683,7 +683,7 @@ RECIPE_TEMPLATES = [
         "description": "20 分钟家常菜，步骤清晰易操作",
         "category": "main",
         "cookingMinutes": 20,
-        "ingredients": [("鸭血", 300, "g"), ("豆腐", 250, "g"), ("豆瓣酱", 15, "g"), ("大蒜", 10, "g"), ("生抽", 8, "ml"), ("菜籽油", 15, "g")],
+        "ingredients": [("鸭血", 300, "g"), ("豆腐", 250, "g"), ("豆瓣酱", 15, "g"), ("大蒜", 10, "g"), ("生抽", 8, "ml"), ("菜籽油", 15, "ml")],
         "steps": ["鸭血豆腐切块焯水", "豆瓣酱蒜爆香", "加少量水", "下食材焖8分钟"],
     },
     {
@@ -707,7 +707,7 @@ RECIPE_TEMPLATES = [
         "description": "15 分钟家常菜，步骤清晰易操作",
         "category": "main",
         "cookingMinutes": 15,
-        "ingredients": [("挂面", 120, "g"), ("大葱", 30, "g"), ("生抽", 15, "ml"), ("白糖", 5, "g"), ("菜籽油", 20, "g")],
+        "ingredients": [("挂面", 120, "g"), ("大葱", 30, "g"), ("生抽", 15, "ml"), ("白糖", 5, "g"), ("菜籽油", 20, "ml")],
         "steps": ["小葱熬葱油", "加生抽糖成汁", "煮面过水", "拌匀装盘"],
     },
     {
@@ -747,7 +747,7 @@ RECIPE_TEMPLATES = [
         "description": "10 分钟家常菜，步骤清晰易操作",
         "category": "side",
         "cookingMinutes": 10,
-        "ingredients": [("生菜", 100, "g"), ("黄瓜", 80, "g"), ("玉米", 50, "g"), ("圣女果", 60, "g"), ("沙拉酱", 20, "g")],
+        "ingredients": [("生菜", 100, "g"), ("黄瓜", 80, "g"), ("玉米", 50, "根"), ("圣女果", 60, "g"), ("沙拉酱", 20, "g")],
         "steps": ["蔬菜洗净沥干", "玉米煮熟剥粒", "切配装盘", "淋沙拉酱"],
     },
     {
@@ -755,7 +755,7 @@ RECIPE_TEMPLATES = [
         "description": "10 分钟家常菜，步骤清晰易操作",
         "category": "side",
         "cookingMinutes": 10,
-        "ingredients": [("秋葵", 200, "g"), ("生抽", 10, "ml"), ("大蒜", 8, "g"), ("菜籽油", 12, "g")],
+        "ingredients": [("秋葵", 200, "g"), ("生抽", 10, "ml"), ("大蒜", 8, "g"), ("菜籽油", 12, "ml")],
         "steps": ["秋葵焯水2分钟", "切蒂摆盘", "淋生抽", "浇蒜油"],
     },
     {
@@ -787,7 +787,7 @@ RECIPE_TEMPLATES = [
         "description": "12 分钟家常菜，步骤清晰易操作",
         "category": "side",
         "cookingMinutes": 12,
-        "ingredients": [("香菇", 150, "g"), ("上海青", 300, "g"), ("蚝油", 12, "ml"), ("大蒜", 8, "g"), ("菜籽油", 10, "g")],
+        "ingredients": [("香菇", 150, "g"), ("上海青", 300, "g"), ("蚝油", 12, "g"), ("大蒜", 8, "g"), ("菜籽油", 10, "ml")],
         "steps": ["香菇切片焯水", "上海青焯水摆盘", "蒜香蚝油成汁", "浇上"],
     },
     {
@@ -795,7 +795,7 @@ RECIPE_TEMPLATES = [
         "description": "16 分钟家常菜，步骤清晰易操作",
         "category": "side",
         "cookingMinutes": 16,
-        "ingredients": [("菜花", 350, "g"), ("五花肉", 80, "g"), ("干辣椒", 4, "g"), ("生抽", 8, "ml"), ("盐", 2, "g"), ("菜籽油", 12, "g")],
+        "ingredients": [("菜花", 350, "g"), ("五花肉", 80, "g"), ("干辣椒", 4, "g"), ("生抽", 8, "ml"), ("盐", 2, "g"), ("菜籽油", 12, "ml")],
         "steps": ["菜花焯水沥干", "五花肉煸出油", "下干辣椒", "大火煸菜花", "调味出锅"],
     },
     {
@@ -811,7 +811,7 @@ RECIPE_TEMPLATES = [
         "description": "18 分钟家常菜，步骤清晰易操作",
         "category": "side",
         "cookingMinutes": 18,
-        "ingredients": [("冬瓜", 400, "g"), ("生抽", 10, "ml"), ("老抽", 4, "ml"), ("白糖", 5, "g"), ("菜籽油", 12, "g")],
+        "ingredients": [("冬瓜", 400, "g"), ("生抽", 10, "ml"), ("老抽", 4, "ml"), ("白糖", 5, "g"), ("菜籽油", 12, "ml")],
         "steps": ["冬瓜切厚片", "煎至微黄", "加生抽老抽糖", "加水焖8分钟", "收汁"],
     },
     {
@@ -829,31 +829,107 @@ def price_for(name: str):
     return PRICE_DB.get(name.strip())
 
 
+# The mock can deliberately write the quantities the way a real model sometimes does: as a
+# fraction of the pack it just looked up, or as kilogram numbers wearing a gram label. The
+# backend has to normalise all three notations to the same shopping list.
+STYLE_FILE = os.environ.get("MOCK_STYLE_FILE", "")
+
+
+def current_style() -> str:
+    """The notation the mock writes its quantities in."""
+    if STYLE_FILE:
+        try:
+            with open(STYLE_FILE, encoding="utf-8") as handle:
+                value = handle.read().strip().lower()
+            if value in ("plain", "pack", "kg"):
+                return value
+        except OSError:
+            pass
+    return (os.environ.get("MOCK_STYLE") or "plain").strip().lower()
+
+
+def restyle(name: str, quantity: float, unit: str):
+    """Rewrite an amount in the notation the current mock style asks for."""
+    style = current_style()
+    if style == "plain":
+        return quantity, unit
+
+    entry = price_for(name)
+    if entry is None:
+        return quantity, unit
+    pack_size = entry[0]
+
+    if style == "pack":
+        # "1.0 x 500g": the model echoes the pack it just looked up.
+        _, pack_base = parse_unit(pack_size)
+        base = quantity * (parse_unit(unit)[1] if parse_unit(unit)[0] else 1.0)
+        if pack_base <= 0:
+            return quantity, unit
+        return round(base / pack_base, 4), pack_size
+
+    if style == "kg":
+        # "0.3 g": the model did the maths in kilograms but labelled the unit in grams.
+        kind, size = parse_unit(unit)
+        if kind in ("weight", "volume") and size == 1.0:
+            return round(quantity / 1000.0, 6), unit
+    return quantity, unit
+
+
+# Mirrors the Java UnitConverter: weight -> grams, volume -> millilitres, countable -> items.
+UNIT_FACTORS = {
+    "g": ("weight", 1.0),
+    "克": ("weight", 1.0),
+    "kg": ("weight", 1000.0),
+    "千克": ("weight", 1000.0),
+    "公斤": ("weight", 1000.0),
+    "ml": ("volume", 1.0),
+    "毫升": ("volume", 1.0),
+    "l": ("volume", 1000.0),
+    "升": ("volume", 1000.0),
+}
+COUNT_UNITS = {"个", "只", "枚", "颗", "根", "片", "张", "块", "条", "瓣", "棵", "头", "包"}
+
+
+def parse_unit(raw: str):
+    """Return (kind, base_size) for a unit string.
+
+    A composite unit such as "500g" is a multiple of that pack, so its base size is the pack
+    size in base units; "g" on its own is simply one gram.
+    """
+    u = (raw or "").strip().lower()
+    if not u:
+        return None, 0.0
+    match = re.match(r"^(\d+(?:\.\d+)?)(.*)$", u)
+    if match:
+        head, tail = match.group(1), match.group(2).strip()
+        kind, factor = simple_unit(tail)
+        if kind:
+            return kind, float(head) * factor
+        return None, 0.0
+    return simple_unit(u)
+
+
+def simple_unit(u: str):
+    if u in UNIT_FACTORS:
+        return UNIT_FACTORS[u]
+    if u in COUNT_UNITS:
+        return "count", 1.0
+    return None, 0.0
+
+
 def unit_cost(name: str, quantity: float, unit: str) -> float:
     """Cost of `quantity` of `unit` given the price table, mirroring the Java helper."""
     entry = price_for(name)
     if entry is None:
         return 0.0
     pack_size, pack_price, _ = entry
-    pack_qty = float(re.sub(r"[^0-9.]", "", pack_size) or 0)
-    pack_unit = re.sub(r"[0-9.]", "", pack_size)
 
-    def base(qty, u):
-        u = (u or "").lower()
-        if u in ("kg", "千克", "公斤"):
-            return qty * 1000
-        if u in ("g", "克"):
-            return qty
-        if u in ("l", "升"):
-            return qty * 1000
-        if u in ("ml", "毫升"):
-            return qty
-        return qty
-
-    pack_base = base(pack_qty, pack_unit)
-    if pack_base <= 0:
+    kind, size = parse_unit(unit)
+    pack_kind, pack_base = parse_unit(pack_size)
+    if kind is None or pack_kind is None or kind != pack_kind or pack_base <= 0:
         return 0.0
-    return round(base(quantity, unit) / pack_base * pack_price, 2)
+    base = quantity * size
+    return round(base / pack_base * pack_price, 2)
 
 
 def build_tool_call(tool_name: str, arguments: dict) -> dict:
@@ -895,6 +971,7 @@ def build_plan(days: int, meals_per_day: int, budget: float, tool_results: list)
         rng.shuffle(batch)
         pool.extend(batch)
 
+    all_true = []
     for day in range(1, days + 1):
         meals = []
         day_cost = 0.0
@@ -908,11 +985,13 @@ def build_plan(days: int, meals_per_day: int, budget: float, tool_results: list)
                 unit_price = price["unitPrice"] if price else 0.0
                 cost = unit_cost(ing_name, qty, unit)
                 meal_cost += cost
+                all_true.append((ing_name, qty, unit))
+                out_qty, out_unit = restyle(ing_name, qty, unit)
                 ingredients.append(
                     {
                         "name": ing_name,
-                        "quantity": qty,
-                        "unit": unit,
+                        "quantity": out_qty,
+                        "unit": out_unit,
                         "estimatedCostPerUnit": unit_price,
                     }
                 )
@@ -943,13 +1022,10 @@ def build_plan(days: int, meals_per_day: int, budget: float, tool_results: list)
         )
 
     shopping = {}
-    for day in day_plans:
-        for meal in day["meals"]:
-            for ing in meal["ingredients"]:
-                key = ing["name"]
-                entry = shopping.setdefault(key, {"qty": 0.0, "unit": ing["unit"], "cost": 0.0})
-                entry["qty"] += ing["quantity"]
-                entry["cost"] += unit_cost(key, ing["quantity"], ing["unit"])
+    for ing_name, qty, unit in all_true:
+        entry = shopping.setdefault(ing_name, {"qty": 0.0, "unit": unit, "cost": 0.0})
+        entry["qty"] += qty
+        entry["cost"] += unit_cost(ing_name, qty, unit)
 
     shopping_cost = round(sum(v["cost"] for v in shopping.values()), 2)
 

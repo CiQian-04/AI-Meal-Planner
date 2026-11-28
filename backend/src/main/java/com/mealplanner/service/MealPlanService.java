@@ -3,9 +3,11 @@ package com.mealplanner.service;
 import com.mealplanner.model.MealPlan;
 import com.mealplanner.model.PlanRequest;
 import com.mealplanner.model.PlanResponse;
-import com.mealplanner.model.ShoppingItem;
 import com.mealplanner.tool.ToolCallRecordingAdvisor;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,14 +40,17 @@ public class MealPlanService {
 	private final ChatClient chatClient;
 	private final ChatClient plainChatClient;
 	private final ShoppingListService shoppingListService;
+	private final QuantityNormalizer quantityNormalizer;
 	private final BeanOutputConverter<MealPlan> outputConverter = new BeanOutputConverter<>(MealPlan.class);
 
 	public MealPlanService(@Qualifier("chatClient") ChatClient chatClient,
 			@Qualifier("plainChatClient") ChatClient plainChatClient,
-			ShoppingListService shoppingListService) {
+			ShoppingListService shoppingListService,
+			QuantityNormalizer quantityNormalizer) {
 		this.chatClient = chatClient;
 		this.plainChatClient = plainChatClient;
 		this.shoppingListService = shoppingListService;
+		this.quantityNormalizer = quantityNormalizer;
 	}
 
 	public PlanResponse plan(PlanRequest request) {
@@ -108,21 +113,26 @@ public class MealPlanService {
 			throw new EmptyModelResponseException("模型返回的菜单为空");
 		}
 
-		List<ShoppingItem> shoppingList = shoppingListService.build(plan);
-		double shoppingCost = shoppingListService.totalCost(shoppingList);
+		// The model writes quantities in whatever convention it feels like; normalise them before
+		// anything is merged or priced, so every later number is built on a real amount.
+		MealPlan normalized = quantityNormalizer.normalize(plan);
+		ShoppingListService.ShoppingList shopping = shoppingListService.buildDetailed(normalized);
+		double shoppingCost = shopping.exactCost();
+		double packCost = shopping.packCost();
 
 		MealPlan enriched = new MealPlan(
-				plan.days(),
-				plan.estimatedTotalCost(),
+				normalized.days(),
+				normalized.estimatedTotalCost(),
 				shoppingCost,
-				reconcile(plan.summary(), plan.estimatedShoppingCost(), shoppingCost),
-				plan.tips(),
+				rewriteCostFigures(reconcile(normalized.summary(), normalized.estimatedShoppingCost(), shoppingCost),
+						shoppingCost, packCost),
+				rewriteTips(normalized.tips(), shoppingCost, packCost),
 				invocations.stream().map(PlanResponse.ToolInvocation::tool).distinct().toList());
 
-		log.info("Generated plan for {} days, budget {} CNY, shopping cost {} CNY, {} tool calls",
-				request.daysOrDefault(), request.budget(), shoppingCost, invocations.size());
+		log.info("Generated plan for {} days, budget {} CNY, shopping cost {} CNY, pack cost {} CNY, {} tool calls",
+				request.daysOrDefault(), request.budget(), shoppingCost, packCost, invocations.size());
 
-		return new PlanResponse(enriched, shoppingList, invocations, request);
+		return new PlanResponse(enriched, shopping.items(), invocations, request, packCost);
 	}
 
 	/** Signals an empty/unparseable model reply that is worth one retry. */
@@ -236,6 +246,73 @@ public class MealPlanService {
 		return summary.replace(formal, actual);
 	}
 
+	/**
+	 * Matches the money the model wrote down: either a currency symbol in front of a number
+	 * ({@code ¥59.14}) or a number followed by {@code 元}.
+	 */
+	private static final Pattern COST_FIGURE = Pattern.compile("[¥￥]\\s*\\d+(?:\\.\\d+)?|\\d+(?:\\.\\d+)?\\s*元");
+
+	/**
+	 * Replaces every cost figure the model wrote with the number computed here.
+	 *
+	 * <p>A figure that talks about whole packs is replaced with the pack cost, every other figure
+	 * with the exact cost of the shopping list. Budgets are left untouched - repeating the budget
+	 * back is fine, claiming a different cost is not.
+	 */
+	static String rewriteCostFigures(String text, double exactCost, double packCost) {
+		if (text == null || text.isBlank()) {
+			return text;
+		}
+		Matcher matcher = COST_FIGURE.matcher(text);
+		StringBuilder out = new StringBuilder();
+		while (matcher.find()) {
+			String before = text.substring(Math.max(0, matcher.start() - 16), matcher.start());
+			String after = text.substring(matcher.end(), Math.min(text.length(), matcher.end() + 8));
+			String raw = matcher.group().trim();
+			if (mentionsBudget(before, after)) {
+				// The budget is not a cost, repeating it back is fine.
+				matcher.appendReplacement(out, Matcher.quoteReplacement(matcher.group()));
+				continue;
+			}
+			boolean symbol = raw.startsWith("¥") || raw.startsWith("￥");
+			double value = mentionsWholePacks(before) ? packCost : exactCost;
+			String money = String.format(java.util.Locale.ROOT, "%.2f", value);
+			String replacement = symbol ? "¥" + money : money + " 元";
+			matcher.appendReplacement(out, Matcher.quoteReplacement(replacement));
+		}
+		matcher.appendTail(out);
+		return out.toString();
+	}
+
+	/** The budget may be mentioned before the number ("预算 1000 元") or after it ("1000 元预算"). */
+	private static boolean mentionsBudget(String before, String after) {
+		return before.contains("预算") || after.stripLeading().startsWith("预算");
+	}
+
+	/** Whole pack wording right in front of the number, as in "按整包采购约需 493 元". */
+	private static boolean mentionsWholePacks(String before) {
+		return before.contains("整包") || before.contains("包装") || before.contains("整袋");
+	}
+
+	/**
+	 * Rewrites the tips and appends the authoritative cost breakdown.
+	 *
+	 * <p>Without this the model happily reports a total it made up, which contradicts the number
+	 * the shopping list was actually priced at.
+	 */
+	static List<String> rewriteTips(List<String> tips, double exactCost, double packCost) {
+		List<String> result = new ArrayList<>();
+		if (tips != null) {
+			for (String tip : tips) {
+				result.add(rewriteCostFigures(tip, exactCost, packCost));
+			}
+		}
+		result.add(String.format(java.util.Locale.ROOT,
+				"本次采购：按实际用量约需 ¥%.2f，按超市整包购买约需 ¥%.2f。",
+				exactCost, packCost));
+		return result;
+	}
+
 	private static String formatInvocations(List<PlanResponse.ToolInvocation> invocations) {
 		StringBuilder sb = new StringBuilder();
 		for (PlanResponse.ToolInvocation invocation : invocations) {
@@ -285,6 +362,13 @@ public class MealPlanService {
 				- 每道菜需要 3-6 个食材，步骤写成 3-6 步，每步一句话。
 				- 食材名称使用中文。
 				- summary 用一句话概括整体菜单；tips 给出 2-4 条实用建议。
+				""");
+		sb.append("""
+				食材用量（必须严格遵守，直接影响采购金额计算）：
+				- quantity 是这道菜实际用量的绝对数值，unit 只能是基础单位：重量用 g（克），体积用 ml（毫升），计数用 个/根/枚/片/张/块。
+				- 严禁把 unit 写成价格工具返回的包装规格（例如 500g、10个、1L），也严禁用千克数值配克单位（例如 quantity=1.25, unit="g" 是错的，应写 1250 g）。
+				- 调料直接写克或毫升（例如 盐 3、生抽 15、食用油 20），不要写 0.003 这种千克数值。
+				- description 只描述这道菜本身（例如"金黄酥软、咸香下饭"），不要写成调味说明或操作步骤。
 				""");
 		return sb.toString();
 	}

@@ -70,14 +70,15 @@ python docs/export_openapi.py
       "result": "[{\"found\":true,\"name\":\"番茄\",\"unit\":\"500g\",\"unitPrice\":4.5}]"
     }
   ],
-  "requestEcho": { "days": 3, "avoidSpicy": true, "budget": 100 }
+  "requestEcho": { "days": 3, "avoidSpicy": true, "budget": 100 },
+  "shoppingPackCost": 78.9
 }
 ```
 
 !!! note "金额以谁为准"
     `shoppingList` 中每一项的 `estimatedCost` 与 `plan.estimatedShoppingCost` 都由后端根据
-    价格库计算；`plan.summary` 里模型自己写的金额若与实算不符，会被替换为实算值，
-    保证用户读到的两处金额一致。
+    价格库计算；`plan.summary` 和 `plan.tips` 里模型自己写的金额若与实算不符，会被替换为实算值，
+    保证用户读到的两处金额一致。`shoppingPackCost` 则是按整包购买的成本。
 
 ## 错误响应
 

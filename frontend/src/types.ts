@@ -64,4 +64,6 @@ export interface PlanResponse {
   shoppingList: ShoppingItem[]
   toolCalls: ToolInvocation[]
   requestEcho: PlanRequest
+  /** What the shopping trip costs when everything is bought in whole packs. */
+  shoppingPackCost: number
 }

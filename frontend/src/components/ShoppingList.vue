@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ShoppingItem } from '@/types'
+import { formatQuantity } from '@/utils/format'
 
 const props = defineProps<{
   items: ShoppingItem[]
@@ -70,7 +71,7 @@ function isChecked(name: string): boolean {
         />
         <span class="shop-name" :class="{ checked: isChecked(item.name) }">
           {{ item.name }}
-          <span class="shop-qty">{{ item.quantity }}{{ item.unit }}</span>
+          <span class="shop-qty">{{ formatQuantity(item.quantity, item.unit) }}</span>
           <span v-if="item.usedIn?.length" class="shop-qty">· 用于 {{ item.usedIn.join('、') }}</span>
         </span>
         <span class="shop-cost" :class="{ checked: isChecked(item.name) }">

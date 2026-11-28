@@ -331,6 +331,10 @@
           },
           "requestEcho": {
             "$ref": "#/components/schemas/PlanRequest"
+          },
+          "shoppingPackCost": {
+            "type": "number",
+            "format": "double"
           }
         }
       },

@@ -36,6 +36,18 @@ public class IngredientPriceService {
 	}
 
 	/**
+	 * Find the price of an ingredient without the JSON round trip.
+	 *
+	 * <p>The shopping list and the quantity normaliser need the price of the same ingredient
+	 * dozens of times per request, so they use this shortcut instead of {@link #findExact(String)}.
+	 *
+	 * @return the price entry, or {@code null} when the ingredient is unknown
+	 */
+	public IngredientPrice lookup(String name) {
+		return tools.lookup(name);
+	}
+
+	/**
 	 * Cost of buying {@code quantity} of {@code unit} of {@code name}, in CNY.
 	 *
 	 * <p>Returns 0 when the ingredient is not in the database, so an unknown item does not break

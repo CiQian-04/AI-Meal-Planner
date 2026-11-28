@@ -87,4 +87,37 @@ class ShoppingListServiceTests {
 		ShoppingItem tomato = items.stream().filter(i -> i.name().equals("番茄")).findFirst().orElseThrow();
 		assertThat(tomato.quantity()).isEqualTo(201.0);
 	}
+
+	@Test
+	@DisplayName("模型回显包装规格时按整包计价")
+	void packSizedUnitsArePricedAsWholePacks() {
+		MealPlan plan = plan(recipe("清蒸鲈鱼", new Ingredient("鲈鱼", 1.0, "500g", null)));
+
+		List<ShoppingItem> items = service.build(plan);
+
+		assertThat(items.get(0).estimatedCost()).isEqualTo(28.00);
+	}
+
+	@Test
+	@DisplayName("整包采购成本按整包向上取整")
+	void packCostRoundsUpToWholePacks() {
+		// 鸡腿 12.50/500g，需要 1250g -> 3 包 = 37.50，按比例只有 31.25
+		MealPlan plan = plan(recipe("可乐鸡腿", new Ingredient("鸡腿", 1250, "g", null)));
+
+		ShoppingListService.ShoppingList shopping = service.buildDetailed(plan);
+
+		assertThat(shopping.exactCost()).isEqualTo(31.25);
+		assertThat(shopping.packCost()).isEqualTo(37.50);
+		assertThat(shopping.items().get(0).estimatedCost()).isEqualTo(31.25);
+	}
+
+	@Test
+	@DisplayName("单位族对不上时不产生错误金额")
+	void mismatchedUnitsDoNotProduceAWrongPrice() {
+		MealPlan plan = plan(recipe("神秘料理", new Ingredient("番茄", 2, "个", null)));
+
+		List<ShoppingItem> items = service.build(plan);
+
+		assertThat(items.get(0).estimatedCost()).isZero();
+	}
 }
