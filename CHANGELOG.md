@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/CiQian-04/AI-Meal-Planner/compare/v0.4.0...v0.4.1) (2026-11-28)
+
+
+### Miscellaneous Chores
+
+* **ui:** show food price source in footer ([b0f862e](https://github.com/CiQian-04/AI-Meal-Planner/commit/b0f862ea00344b18810d0af42a6a9003c6a197a1))
+
 ## [0.4.0](https://github.com/CiQian-04/AI-Meal-Planner/compare/v0.3.1...v0.4.0) (2026-11-28)
 
 
