@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.4.0](https://github.com/CiQian-04/AI-Meal-Planner/compare/v0.3.1...v0.4.0) (2026-11-28)
+
+
+### Features
+
+* add meal preferences and daily wholesale prices ([7355017](https://github.com/CiQian-04/AI-Meal-Planner/commit/73550176b2b4235db98e072a4fd55841660d28e9))
+* 默认模型切回 DeepSeek 官方端点 ([3380570](https://github.com/CiQian-04/AI-Meal-Planner/commit/3380570bf53441a26f27241f412efe130be2aff2))
+
+
+### Bug Fixes
+
+* 修正采购金额计算与食材用量归一化 ([77c8eac](https://github.com/CiQian-04/AI-Meal-Planner/commit/77c8eacc4720cf339d6404f1419bc4da524c5049))
+* 提高 max tokens 预算避免多日菜单 JSON 被截断 ([c8ebc52](https://github.com/CiQian-04/AI-Meal-Planner/commit/c8ebc5248c2feb1d88e0d04b13793efcfdeaa68c))
+* 收敛工具面避免推理模型连环调价，修正重试配置前缀 ([1a03c8f](https://github.com/CiQian-04/AI-Meal-Planner/commit/1a03c8ffd9859d9e46e95a344aa91c74721529ea))
+* 无工具兜底调用强制 JSON 输出模式 ([e0cd2d6](https://github.com/CiQian-04/AI-Meal-Planner/commit/e0cd2d66a74dd13b018c702b9eb7697304d9bb4f))
+
+
+### Miscellaneous Chores
+
+* 忽略本地工作记忆目录 .workbuddy-ai/ ([dd637ce](https://github.com/CiQian-04/AI-Meal-Planner/commit/dd637cecbcb9561f47406ddfcb0605f770cf43d0))
+
 ## [0.3.1](https://github.com/CiQian-04/AI-Meal-Planner/compare/v0.3.0...v0.3.1) (2026-11-27)
 
 
