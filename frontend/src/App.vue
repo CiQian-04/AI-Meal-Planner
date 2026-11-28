@@ -246,6 +246,7 @@ async function copyToClipboard() {
 
     <footer class="footer">
       <a href="/swagger-ui.html">服务说明</a> · 好好吃饭，从认真计划开始
+      <small class="price-source-note">价格来源为农业农村部农产品批发市场价格数据</small>
     </footer>
   </main>
 </template>

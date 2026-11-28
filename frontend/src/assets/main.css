@@ -712,6 +712,7 @@ body { background: var(--bg); font-size: 15px; }
 .side-card { border-radius:12px; background:#f8f7f1; border-color:#ece8de; }
 .empty { border-style:dashed; background:rgba(255,254,250,.65); box-shadow:none; }
 .footer { border-color:var(--border); }
+.price-source-note { display:block; margin-top:7px; color:var(--text-muted); font-size:11px; }
 a:focus-visible,button:focus-visible,input:focus-visible { outline:3px solid rgba(71,116,92,.35); outline-offset:2px; }
 
 @media (max-width:760px) {
