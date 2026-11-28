@@ -33,3 +33,6 @@ site/
 # Local verification artifacts
 shots/
 frames/
+
+# Local agent memory (personal notes, not for repo)
+.workbuddy-ai/
